@@ -1,0 +1,81 @@
+# ==========================================
+# Volunteer Matching AI Service - Git Ignore
+# ==========================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.pyo
+*.so
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment Variables & Sensitive Secrets (NEVER COMMIT)
+.env
+.env.*
+*.env
+!.env.example
+
+# Vector Store, Model Weights & Local Databases
+vector_store/
+.chroma/
+chroma_storage/
+*.db
+*.sqlite
+*.sqlite3
+*.pkl
+*.pickle
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.onnx
+
+# HuggingFace & SentenceTransformers Cache
+.cache/
+sentence_transformers/
+huggingface/
+checkpoints/
+
+# FastAPI / Uvicorn Logs & PIDs
+*.log
+*.pid
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+.mypy_cache/
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE & Editor specific
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.code-workspace
+
+# OS Generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

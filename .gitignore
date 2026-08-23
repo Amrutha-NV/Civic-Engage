@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+**/node_modules/
+package-lock.json
+**/package-lock.json
+
+# Environment files & Secrets
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+.pytest_cache/
+**/.pytest_cache/
+.venv/
+venv/
+env/
+*.sqlite
+*.sqlite3
+*.db
+vector_store/
+**/vector_store/
+.cache/
+**/sentence_transformers/
+
+# Frontend Build
+frontend/dist/
+dist/
+.vite/
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

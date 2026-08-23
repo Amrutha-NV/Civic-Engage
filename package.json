@@ -1,0 +1,15 @@
+{
+  "name": "civic-engage-monorepo",
+  "version": "1.0.0",
+  "description": "CivicEngage Workspace Root - Civic Engagement & NGO Platform",
+  "scripts": {
+    "start:backend": "npm --prefix backend start",
+    "dev:backend": "npm --prefix backend run dev",
+    "seed:backend": "npm --prefix backend run seed",
+    "start:frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "start:ai-recommendation": "python ai-service/recommendation/app.py",
+    "start:ai-matching": "uvicorn ai-service.volunteer-matching.main:app --reload"
+  }
+}
+
