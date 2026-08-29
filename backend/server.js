@@ -1,26 +1,34 @@
 const express = require("express");
-const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
+const dotenv = require("dotenv");
+
+// 1. Load environment variables from root directory (.env), with fallback to local .env
+const rootEnv = path.resolve(__dirname, "..", ".env");
+const localEnv = path.resolve(__dirname, ".env");
+dotenv.config({ path: rootEnv });
+dotenv.config({ path: localEnv });
+
+// 2. Import and run connectDB ONLY after environment variables are loaded
 const connectDB = require("./config/db");
-const cloudinary = require("cloudinary").v2;
-
-// Load .env from Civic-Engage project root
-dotenv.config({
-  path: path.resolve(__dirname, "../.env"),
-});
-
 connectDB();
 
+const cloudinary = require("cloudinary").v2;
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
 // Clean up Cloudinary keys globally on server initialization
-const cloudName = (process.env.CLOUDINARY_CLOUD_NAME || "").replace(/["'\s]/g, "");
+const cloudName = (process.env.CLOUDINARY_CLOUD_NAME || "").replace(
+  /["'\s]/g,
+  "",
+);
 const apiKey = (process.env.CLOUDINARY_API_KEY || "").replace(/["'\s]/g, "");
-const apiSecret = (process.env.CLOUDINARY_API_SECRET || "").replace(/["'\s]/g, "");
+const apiSecret = (process.env.CLOUDINARY_API_SECRET || "").replace(
+  /["'\s]/g,
+  "",
+);
 
 if (cloudName && apiKey && apiSecret) {
   cloudinary.config({
@@ -32,7 +40,7 @@ if (cloudName && apiKey && apiSecret) {
   console.log("✅ Cloudinary Global Config Initialization Successful");
 } else {
   console.warn(
-    "⚠️ Cloudinary initialization skipped: Keys missing in environment configuration."
+    "⚠️ Cloudinary initialization skipped: Keys missing in environment configuration.",
   );
 }
 

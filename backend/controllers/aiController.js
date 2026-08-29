@@ -8,13 +8,10 @@ const { resolveLocationCoordinates } = require("../utils/aiSync");
 // ============================================================
 
 const AI_RECOMMENDER_URL =
-  process.env.AI_RECOMMENDATION_SERVICE_URL ||
-  "http://127.0.0.1:5001";
+  process.env.AI_RECOMMENDATION_SERVICE_URL || "http://127.0.0.1:5001";
 
 const AI_VOLUNTEER_SERVICE_URL =
-  process.env.AI_VOLUNTEER_MATCHING_SERVICE_URL ||
-  "http://127.0.0.1:8000";
-
+  process.env.AI_VOLUNTEER_MATCHING_SERVICE_URL || "http://127.0.0.1:8000";
 
 // ============================================================
 // HELPER: USER → EVENT FALLBACK MATCHING
@@ -23,16 +20,14 @@ const AI_VOLUNTEER_SERVICE_URL =
 function computeUserEventMatch(user, event) {
   let score = 60;
 
-  const userSkills = (user.skills || []).map((s) =>
-    String(s).toLowerCase()
-  );
+  const userSkills = (user.skills || []).map((s) => String(s).toLowerCase());
 
   const userInterests = (user.interests || []).map((i) =>
-    String(i).toLowerCase()
+    String(i).toLowerCase(),
   );
 
   const requiredSkills = (event.requiredSkills || []).map((s) =>
-    String(s).toLowerCase()
+    String(s).toLowerCase(),
   );
 
   const category = String(event.category || "").toLowerCase();
@@ -43,8 +38,7 @@ function computeUserEventMatch(user, event) {
     if (
       userSkills.some(
         (userSkill) =>
-          userSkill.includes(reqSkill) ||
-          reqSkill.includes(userSkill)
+          userSkill.includes(reqSkill) || reqSkill.includes(userSkill),
       )
     ) {
       score += 15;
@@ -54,9 +48,7 @@ function computeUserEventMatch(user, event) {
 
   if (
     userInterests.some(
-      (interest) =>
-        category.includes(interest) ||
-        interest.includes(category)
+      (interest) => category.includes(interest) || interest.includes(category),
     )
   ) {
     score += 15;
@@ -65,9 +57,7 @@ function computeUserEventMatch(user, event) {
   score = Math.min(98, Math.max(65, score));
 
   const reason = `Matches your skills in ${
-    matchedSkills.length > 0
-      ? matchedSkills.join(", ")
-      : "community service"
+    matchedSkills.length > 0 ? matchedSkills.join(", ") : "community service"
   } and location.`;
 
   return {
@@ -75,7 +65,6 @@ function computeUserEventMatch(user, event) {
     reason,
   };
 }
-
 
 // ============================================================
 // HELPER: HAVERSINE DISTANCE
@@ -113,15 +102,10 @@ function haversineDistance(coord1, coord2) {
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
 
-  const c =
-    2 * Math.atan2(
-      Math.sqrt(a),
-      Math.sqrt(1 - a)
-    );
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return Math.round(R * c * 10) / 10;
 }
-
 
 // ============================================================
 // HELPER: VOLUNTEER FALLBACK MATCHING
@@ -131,15 +115,15 @@ function computeVolunteerMatch(event, volunteer, eventCoords) {
   let score = 65;
 
   const volSkills = (volunteer.skills || []).map((s) =>
-    String(s).toLowerCase()
+    String(s).toLowerCase(),
   );
 
   const volInterests = (volunteer.interests || []).map((i) =>
-    String(i).toLowerCase()
+    String(i).toLowerCase(),
   );
 
   const requiredSkills = (event.requiredSkills || []).map((s) =>
-    String(s).toLowerCase()
+    String(s).toLowerCase(),
   );
 
   const category = String(event.category || "").toLowerCase();
@@ -151,8 +135,7 @@ function computeVolunteerMatch(event, volunteer, eventCoords) {
     if (
       volSkills.some(
         (volSkill) =>
-          volSkill.includes(reqSkill) ||
-          reqSkill.includes(volSkill)
+          volSkill.includes(reqSkill) || reqSkill.includes(volSkill),
       )
     ) {
       skillMatchCount++;
@@ -162,58 +145,37 @@ function computeVolunteerMatch(event, volunteer, eventCoords) {
 
   score += skillMatchCount * 12;
 
-  if (
-    volInterests.some((interest) =>
-      category.includes(interest)
-    )
-  ) {
+  if (volInterests.some((interest) => category.includes(interest))) {
     score += 10;
   }
 
-  if (
-    String(volunteer.availability || "").toLowerCase() ===
-    "available"
-  ) {
+  if (String(volunteer.availability || "").toLowerCase() === "available") {
     score += 5;
   }
 
   const vCoords =
-    volunteer.coordinates ||
-    resolveLocationCoordinates(volunteer.location);
+    volunteer.coordinates || resolveLocationCoordinates(volunteer.location);
 
   const eCoords =
     eventCoords ||
-    resolveLocationCoordinates(
-      event.location,
-      event.coordinates
-    );
+    resolveLocationCoordinates(event.location, event.coordinates);
 
   const distKm = haversineDistance(eCoords, vCoords);
 
   const proximityScore = Math.min(
     99,
-    Math.max(
-      65,
-      Math.round(100 / (1 + distKm / 15))
-    )
+    Math.max(65, Math.round(100 / (1 + distKm / 15))),
   );
 
   score = Math.min(99, Math.max(68, score));
 
   const breakdown = {
-    skills: Math.min(
-      98,
-      70 + skillMatchCount * 10
-    ),
+    skills: Math.min(98, 70 + skillMatchCount * 10),
 
-    interests: Math.min(
-      95,
-      75 + (volInterests.length > 0 ? 10 : 0)
-    ),
+    interests: Math.min(95, 75 + (volInterests.length > 0 ? 10 : 0)),
 
     availability:
-      String(volunteer.availability || "").toLowerCase() ===
-      "available"
+      String(volunteer.availability || "").toLowerCase() === "available"
         ? 95
         : 80,
 
@@ -255,10 +217,7 @@ function computeVolunteerMatch(event, volunteer, eventCoords) {
 
     distanceKm: distKm,
 
-    impactScore:
-      volunteer.impactScore ||
-      volunteer.social_impact_score ||
-      85,
+    impactScore: volunteer.impactScore || volunteer.social_impact_score || 85,
 
     matchPercent: score,
 
@@ -269,7 +228,6 @@ function computeVolunteerMatch(event, volunteer, eventCoords) {
     matchedSkills: matchedSkillsList,
   };
 }
-
 
 // ============================================================
 // GET AI RECOMMENDED EVENTS FOR USER
@@ -299,16 +257,9 @@ exports.getEventRecommendations = async (req, res) => {
 
     if (!user) {
       user = {
-        skills: [
-          "Teaching",
-          "Environmental Science",
-          "Communication",
-        ],
+        skills: ["Teaching", "Environmental Science", "Communication"],
 
-        interests: [
-          "Environment",
-          "Education",
-        ],
+        interests: ["Environment", "Education"],
 
         location: "Manila",
 
@@ -324,37 +275,29 @@ exports.getEventRecommendations = async (req, res) => {
 
     const events = await Campaign.find({
       status: "Active",
-    }).populate(
-      "ngoId",
-      "ngoName logo"
-    );
+    }).populate("ngoId", "ngoName logo");
 
     // --------------------------------------------------------
     // 4. Resolve user's coordinates
     // --------------------------------------------------------
 
-    const userCoordinates =
-      resolveLocationCoordinates(
-        user.location,
-        user.coordinates
-      );
+    const userCoordinates = resolveLocationCoordinates(
+      user.location,
+      user.coordinates,
+    );
 
     // --------------------------------------------------------
     // 5. Send data to Flask AI recommender
     // --------------------------------------------------------
 
     try {
-      console.log(
-        "🤖 Calling AI Event Recommendation Service..."
-      );
+      console.log("🤖 Calling AI Event Recommendation Service...");
 
       const response = await axios.post(
         `${AI_RECOMMENDER_URL}/recommend`,
         {
           user: {
-            id:
-              user._id?.toString() ||
-              user.id,
+            id: user._id?.toString() || user.id,
 
             skills: user.skills || [],
 
@@ -364,8 +307,7 @@ exports.getEventRecommendations = async (req, res) => {
 
             coordinates: userCoordinates,
 
-            availability:
-              user.availability || "",
+            availability: user.availability || "",
           },
 
           events: events.map((event) => ({
@@ -373,23 +315,18 @@ exports.getEventRecommendations = async (req, res) => {
 
             title: event.title,
 
-            description:
-              event.description || "",
+            description: event.description || "",
 
-            category:
-              event.category || "",
+            category: event.category || "",
 
-            requiredSkills:
-              event.requiredSkills || [],
+            requiredSkills: event.requiredSkills || [],
 
-            location:
-              event.location || "",
+            location: event.location || "",
 
-            coordinates:
-              resolveLocationCoordinates(
-                event.location,
-                event.coordinates
-              ),
+            coordinates: resolveLocationCoordinates(
+              event.location,
+              event.coordinates,
+            ),
 
             date: event.date,
           })),
@@ -398,7 +335,7 @@ exports.getEventRecommendations = async (req, res) => {
         {
           // Transformer model + Groq can take a little time
           timeout: 15000,
-        }
+        },
       );
 
       // ------------------------------------------------------
@@ -407,87 +344,92 @@ exports.getEventRecommendations = async (req, res) => {
 
       if (
         response.data &&
-        response.data.recommendations
+        response.data.recommendations &&
+        Array.isArray(response.data.recommendations)
       ) {
         console.log(
-          `✅ AI returned ${response.data.recommendations.length} recommendations`
+          `✅ AI returned ${response.data.recommendations.length} recommendations`,
         );
+
+        // Map AI recommendations by ID to the full populated Mongoose event objects
+        const eventMap = new Map();
+        events.forEach((evt) => {
+          eventMap.set(evt._id.toString(), evt);
+        });
+
+        const enrichedRecommendations = response.data.recommendations
+          .map((rec) => {
+            const eventId = String(rec.id || rec._id || "");
+            const fullEvent = eventMap.get(eventId);
+            if (!fullEvent) return null;
+
+            return {
+              ...fullEvent.toObject(),
+              matchScore: rec.matchScore,
+              reason:
+                rec.explanation ||
+                rec.reason ||
+                `Match score: ${rec.matchScore}%`,
+              explanation: rec.explanation || rec.reason,
+              matchedSkills: rec.matchedSkills || [],
+              breakdown: rec.breakdown || {},
+              distanceKm: rec.distanceKm,
+            };
+          })
+          .filter(Boolean);
 
         return res.status(200).json({
           success: true,
-
           recommendations:
-            response.data.recommendations,
+            enrichedRecommendations.length > 0
+              ? enrichedRecommendations
+              : response.data.recommendations,
         });
       }
 
-      console.log(
-        "⚠️ AI returned no recommendations. Using fallback."
-      );
+      console.log("⚠️ AI returned no recommendations. Using fallback.");
     } catch (aiErr) {
       console.log(
-        "⚠️ AI Recommender service unavailable, using algorithm fallback."
+        "⚠️ AI Recommender service unavailable, using algorithm fallback.",
       );
 
-      console.log(
-        "AI error:",
-        aiErr.message
-      );
+      console.log("AI error:", aiErr.message);
     }
 
     // --------------------------------------------------------
     // 7. Fallback recommendation algorithm
     // --------------------------------------------------------
 
-    const recommendations = events.map(
-      (event) => {
-        const match =
-          computeUserEventMatch(
-            user,
-            event
-          );
+    const recommendations = events.map((event) => {
+      const match = computeUserEventMatch(user, event);
 
-        return {
-          ...event.toObject(),
+      return {
+        ...event.toObject(),
 
-          matchScore:
-            match.matchScore,
+        matchScore: match.matchScore,
 
-          reason:
-            match.reason,
-        };
-      }
-    );
+        reason: match.reason,
+      };
+    });
 
     // Highest score first
-    recommendations.sort(
-      (a, b) =>
-        b.matchScore -
-        a.matchScore
-    );
+    recommendations.sort((a, b) => b.matchScore - a.matchScore);
 
     return res.status(200).json({
       success: true,
 
-      recommendations:
-        recommendations.slice(0, 6),
+      recommendations: recommendations.slice(0, 6),
     });
   } catch (error) {
-    console.error(
-      "❌ getEventRecommendations Error:",
-      error
-    );
+    console.error("❌ getEventRecommendations Error:", error);
 
     return res.status(500).json({
-      message:
-        "Recommendation failed",
+      message: "Recommendation failed",
 
-      error:
-        error.message,
+      error: error.message,
     });
   }
 };
-
 
 // ============================================================
 // GET AI RECOMMENDED VOLUNTEERS FOR NGO EVENT
@@ -495,10 +437,7 @@ exports.getEventRecommendations = async (req, res) => {
 // POST /api/recommendations/volunteers
 // ============================================================
 
-exports.getVolunteerRecommendations = async (
-  req,
-  res
-) => {
+exports.getVolunteerRecommendations = async (req, res) => {
   try {
     const { eventId } = req.body;
 
@@ -516,8 +455,7 @@ exports.getVolunteerRecommendations = async (
     // 2. Find campaign/event
     // --------------------------------------------------------
 
-    const event =
-      await Campaign.findById(eventId);
+    const event = await Campaign.findById(eventId);
 
     if (!event) {
       return res.status(404).json({
@@ -529,112 +467,88 @@ exports.getVolunteerRecommendations = async (
     // 3. Get volunteers
     // --------------------------------------------------------
 
-    const volunteers =
-      await User.find({
-        $or: [
-          { role: "user" },
-          { role: "volunteer" },
-          { role: { $exists: false } },
-          { role: null },
-        ],
-      })
-        .select("-otp -otpExpires")
-        .populate("registeredEvents");
+    const volunteers = await User.find({
+      $or: [
+        { role: "user" },
+        { role: "volunteer" },
+        { role: { $exists: false } },
+        { role: null },
+      ],
+    })
+      .select("-otp -otpExpires")
+      .populate("registeredEvents");
 
     // --------------------------------------------------------
     // 4. Event coordinates
     // --------------------------------------------------------
 
-    const eventCoords =
-      resolveLocationCoordinates(
-        event.location,
-        event.coordinates
-      );
+    const eventCoords = resolveLocationCoordinates(
+      event.location,
+      event.coordinates,
+    );
 
     // --------------------------------------------------------
     // 5. Format volunteers for AI service
     // --------------------------------------------------------
 
-    const formattedVolunteers =
-      volunteers.map((volunteer) => {
-        const registeredEvents =
-          volunteer.registeredEvents || [];
+    const formattedVolunteers = volunteers.map((volunteer) => {
+      const registeredEvents = volunteer.registeredEvents || [];
 
-        const activeCount =
-          registeredEvents.filter(
-            (registeredEvent) =>
-              registeredEvent &&
-              (
-                registeredEvent.status ===
-                  "Active" ||
-                registeredEvent.status ===
-                  "Upcoming"
-              )
-          ).length;
+      const activeCount = registeredEvents.filter(
+        (registeredEvent) =>
+          registeredEvent &&
+          (registeredEvent.status === "Active" ||
+            registeredEvent.status === "Upcoming"),
+      ).length;
 
-        const historyIds =
-          registeredEvents
-            .filter(
-              (registeredEvent) =>
-                registeredEvent &&
-                registeredEvent.status ===
-                  "Completed"
-            )
-            .map((registeredEvent) =>
-              registeredEvent._id.toString()
-            );
+      const historyIds = registeredEvents
+        .filter(
+          (registeredEvent) =>
+            registeredEvent && registeredEvent.status === "Completed",
+        )
+        .map((registeredEvent) => registeredEvent._id.toString());
 
-        const volunteerCoords =
-          resolveLocationCoordinates(
-            volunteer.location,
-            volunteer.coordinates
-          );
+      const volunteerCoords = resolveLocationCoordinates(
+        volunteer.location,
+        volunteer.coordinates,
+      );
 
-        return {
-          id: volunteer._id.toString(),
+      return {
+        id: volunteer._id.toString(),
 
-          _id: volunteer._id.toString(),
+        _id: volunteer._id.toString(),
 
-          name: volunteer.name,
+        name: volunteer.name,
 
-          email: volunteer.email,
+        email: volunteer.email,
 
-          phone: volunteer.phone,
+        phone: volunteer.phone,
 
-          avatar: volunteer.avatar,
+        avatar: volunteer.avatar,
 
-          skills: volunteer.skills || [],
+        skills: volunteer.skills || [],
 
-          interests:
-            volunteer.interests || [],
+        interests: volunteer.interests || [],
 
-          availability:
-            volunteer.availability,
+        availability: volunteer.availability,
 
-          location:
-            volunteer.location,
+        location: volunteer.location,
 
-          coordinates:
-            volunteerCoords,
+        coordinates: volunteerCoords,
 
-          occupation:
-            volunteer.occupation,
+        occupation: volunteer.occupation,
 
-          attendance_rate: 0.95,
+        attendance_rate: 0.95,
 
-          social_impact_score:
-            volunteer.impactScore || 85,
+        social_impact_score: volunteer.impactScore || 85,
 
-          impact_score:
-            volunteer.impactScore || 85,
+        impact_score: volunteer.impactScore || 85,
 
-          active_campaigns:
-            activeCount,
+        active_campaigns: activeCount,
 
-          history_ids:
-            historyIds,
-        };
-      });
+        history_ids: historyIds,
+      };
+    });
 
     // --------------------------------------------------------
     // 6. Format event for volunteer AI service
@@ -647,23 +561,17 @@ exports.getVolunteerRecommendations = async (
 
       title: event.title,
 
-      description:
-        event.description || "",
+      description: event.description || "",
 
-      category:
-        event.category || "General",
+      category: event.category || "General",
 
-      requiredSkills:
-        event.requiredSkills || [],
+      requiredSkills: event.requiredSkills || [],
 
-      location:
-        event.location,
+      location: event.location,
 
-      coordinates:
-        eventCoords,
+      coordinates: eventCoords,
 
-      date:
-        event.date,
+      date: event.date,
     };
 
     // --------------------------------------------------------
@@ -671,96 +579,64 @@ exports.getVolunteerRecommendations = async (
     // --------------------------------------------------------
 
     try {
-      console.log(
-        "🤖 Calling AI Volunteer Matching Service..."
+      console.log("🤖 Calling AI Volunteer Matching Service...");
+
+      const response = await axios.post(
+        `${AI_VOLUNTEER_SERVICE_URL}/recommend-volunteers`,
+        {
+          event: eventPayload,
+
+          volunteers: formattedVolunteers,
+        },
+        {
+          timeout: 15000,
+        },
       );
 
-      const response =
-        await axios.post(
-          `${AI_VOLUNTEER_SERVICE_URL}/recommend-volunteers`,
-          {
-            event: eventPayload,
-
-            volunteers:
-              formattedVolunteers,
-          },
-          {
-            timeout: 15000,
-          }
-        );
-
-      if (
-        response.data &&
-        response.data.volunteers
-      ) {
+      if (response.data && response.data.volunteers) {
         console.log(
-          `✅ AI returned ${response.data.volunteers.length} volunteers`
+          `✅ AI returned ${response.data.volunteers.length} volunteers`,
         );
 
         return res.status(200).json({
           success: true,
 
-          volunteers:
-            response.data.volunteers,
+          volunteers: response.data.volunteers,
         });
       }
     } catch (aiErr) {
-      console.log(
-        "⚠️ AI Volunteer Matching service unavailable or timed out."
-      );
+      console.log("⚠️ AI Volunteer Matching service unavailable or timed out.");
 
-      console.log(
-        "AI volunteer error:",
-        aiErr.message
-      );
+      console.log("AI volunteer error:", aiErr.message);
 
-      console.log(
-        "Using enhanced algorithm fallback..."
-      );
+      console.log("Using enhanced algorithm fallback...");
     }
 
     // --------------------------------------------------------
     // 8. Fallback volunteer matching
     // --------------------------------------------------------
 
-    const scoredVolunteers =
-      formattedVolunteers.map(
-        (volunteer) =>
-          computeVolunteerMatch(
-            event,
-            volunteer,
-            eventCoords
-          )
-      );
-
-    scoredVolunteers.sort(
-      (a, b) =>
-        b.matchPercent -
-        a.matchPercent
+    const scoredVolunteers = formattedVolunteers.map((volunteer) =>
+      computeVolunteerMatch(event, volunteer, eventCoords),
     );
+
+    scoredVolunteers.sort((a, b) => b.matchPercent - a.matchPercent);
 
     return res.status(200).json({
       success: true,
 
-      volunteers:
-        scoredVolunteers,
+      volunteers: scoredVolunteers,
     });
   } catch (error) {
-    console.error(
-      "❌ getVolunteerRecommendations Error:",
-      error
-    );
+    console.error("❌ getVolunteerRecommendations Error:", error);
 
     return res.status(500).json({
-      message:
-        "Volunteer matching failed",
+      message: "Volunteer matching failed",
 
-      error:
-        error.message,
+      error: error.message,
     });
   }
 };
-
 
 // ============================================================
 // AI TENDER GENERATOR
@@ -768,18 +644,9 @@ exports.getVolunteerRecommendations = async (
 // POST /api/tender/generate
 // ============================================================
 
-exports.generateTender = async (
-  req,
-  res
-) => {
+exports.generateTender = async (req, res) => {
   try {
-    const {
-      eventType,
-      requirements,
-      budget,
-      items,
-      prompt,
-    } = req.body;
+    const { eventType, requirements, budget, items, prompt } = req.body;
 
     // --------------------------------------------------------
     // 1. Validate input
@@ -787,8 +654,7 @@ exports.generateTender = async (
 
     if (!eventType || !budget) {
       return res.status(400).json({
-        message:
-          "eventType and budget are required",
+        message: "eventType and budget are required",
       });
     }
 
@@ -796,23 +662,17 @@ exports.generateTender = async (
     // 2. Generate reference number
     // --------------------------------------------------------
 
-    const refNo =
-      `RFQ-${new Date().getFullYear()}-${Math.floor(
-        1000 + Math.random() * 9000
-      )}`;
+    const refNo = `RFQ-${new Date().getFullYear()}-${Math.floor(
+      1000 + Math.random() * 9000,
+    )}`;
 
-    const issueDate =
-      new Date().toLocaleDateString(
-        "en-US",
-        {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }
-      );
+    const issueDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
 
-    const formattedBudget =
-      Number(budget).toLocaleString();
+    const formattedBudget = Number(budget).toLocaleString();
 
     // --------------------------------------------------------
     // 3. Prepare items
@@ -821,18 +681,11 @@ exports.generateTender = async (
     let itemsListStr = "";
 
     if (items) {
-      const lines =
-        items
-          .split("\n")
-          .filter(Boolean);
+      const lines = items.split("\n").filter(Boolean);
 
-      itemsListStr =
-        lines
-          .map(
-            (item, index) =>
-              `  ${index + 1}. ${item.trim()}`
-          )
-          .join("\n");
+      itemsListStr = lines
+        .map((item, index) => `  ${index + 1}. ${item.trim()}`)
+        .join("\n");
     } else {
       itemsListStr = `
   1. Event Coordination & Facilitation Services
@@ -944,21 +797,15 @@ Location:       CivicEngage NGO Operations Center,
 
       issueDate,
 
-      document:
-        documentContent,
+      document: documentContent,
     });
   } catch (error) {
-    console.error(
-      "❌ generateTender Error:",
-      error
-    );
+    console.error("❌ generateTender Error:", error);
 
     return res.status(500).json({
-      message:
-        "Tender generation failed",
+      message: "Tender generation failed",
 
-      error:
-        error.message,
+      error: error.message,
     });
   }
 };

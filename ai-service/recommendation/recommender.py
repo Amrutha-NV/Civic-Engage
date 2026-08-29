@@ -1,5 +1,14 @@
 import math
+import sys
 from typing import Any, Dict, List, Optional
+
+# Ensure UTF-8 stdout on Windows
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -62,43 +71,60 @@ class SemanticRecommender:
         return float(np.clip(similarity, 0.0, 1.0))
 
     @staticmethod
+    def _extract_lat_lng(coords: Any) -> Optional[tuple[float, float]]:
+        """Safely extract (latitude, longitude) from dict, list, or tuple."""
+        if not coords:
+            return None
+
+        try:
+            if isinstance(coords, dict):
+                lat = coords.get("lat") if coords.get("lat") is not None else coords.get("latitude")
+                lon = coords.get("lng") if coords.get("lng") is not None else (coords.get("lon") or coords.get("longitude"))
+                if lat is not None and lon is not None:
+                    return float(lat), float(lon)
+            elif isinstance(coords, (list, tuple)) and len(coords) >= 2:
+                return float(coords[0]), float(coords[1])
+        except (TypeError, ValueError, KeyError, IndexError):
+            return None
+
+        return None
+
+    @staticmethod
     def haversine_distance(
-        coordinates_a: Optional[List[float]],
-        coordinates_b: Optional[List[float]],
+        coordinates_a: Any,
+        coordinates_b: Any,
     ) -> Optional[float]:
         """
         Calculate distance between two latitude/longitude points.
 
-        Coordinates must be:
-        [latitude, longitude]
+        Supports:
+            - Dict: {'lat': float, 'lng': float} or {'latitude': float, 'longitude': float}
+            - List/Tuple: [latitude, longitude]
 
         Returns:
             Distance in kilometres, or None if coordinates are unavailable.
         """
-        if not coordinates_a or not coordinates_b:
+        point_a = SemanticRecommender._extract_lat_lng(coordinates_a)
+        point_b = SemanticRecommender._extract_lat_lng(coordinates_b)
+
+        if not point_a or not point_b:
             return None
 
-        if len(coordinates_a) < 2 or len(coordinates_b) < 2:
-            return None
-
-        try:
-            lat1, lon1 = float(coordinates_a[0]), float(coordinates_a[1])
-            lat2, lon2 = float(coordinates_b[0]), float(coordinates_b[1])
-        except (TypeError, ValueError):
-            return None
+        lat1, lon1 = point_a
+        lat2, lon2 = point_b
 
         earth_radius_km = 6371.0
 
-        lat1 = math.radians(lat1)
-        lat2 = math.radians(lat2)
+        lat1_rad = math.radians(lat1)
+        lat2_rad = math.radians(lat2)
 
-        delta_lat = math.radians(float(coordinates_b[0]) - float(coordinates_a[0]))
-        delta_lon = math.radians(float(coordinates_b[1]) - float(coordinates_a[1]))
+        delta_lat = math.radians(lat2 - lat1)
+        delta_lon = math.radians(lon2 - lon1)
 
         a = (
             math.sin(delta_lat / 2) ** 2
-            + math.cos(lat1)
-            * math.cos(lat2)
+            + math.cos(lat1_rad)
+            * math.cos(lat2_rad)
             * math.sin(delta_lon / 2) ** 2
         )
 
@@ -282,23 +308,13 @@ class SemanticRecommender:
         if not events_data:
             return []
 
-        user_skills = self._normalise_list(
-            user_data.get("skills", [])
-        )
-
-        user_interests = self._normalise_list(
-            user_data.get("interests", [])
-        )
-
-        user_availability = self._normalise_text(
-            user_data.get("availability", "")
-        )
-
+        user_skills = self._normalise_list(user_data.get("skills", []))
+        user_interests = self._normalise_list(user_data.get("interests", []))
+        user_availability = self._normalise_text(user_data.get("availability", ""))
         user_coordinates = user_data.get("coordinates")
 
+        # Generate volunteer semantic embedding
         user_text = self.build_user_text(user_data)
-
-        # Create semantic embedding for the volunteer.
         user_embedding = self.model.encode(
             user_text,
             convert_to_numpy=True,
@@ -309,7 +325,6 @@ class SemanticRecommender:
 
         for event in events_data:
             event_text = self.build_event_text(event)
-
             event_embedding = self.model.encode(
                 event_text,
                 convert_to_numpy=True,
@@ -321,10 +336,7 @@ class SemanticRecommender:
                 event_embedding,
             )
 
-            required_skills = self._normalise_list(
-                event.get("requiredSkills", [])
-            )
-
+            required_skills = self._normalise_list(event.get("requiredSkills", []))
             skill_score, matched_skills = self.skill_match(
                 user_skills,
                 required_skills,
@@ -341,7 +353,6 @@ class SemanticRecommender:
                 user_coordinates,
                 event.get("coordinates"),
             )
-
             proximity = self.proximity_score(distance_km)
 
             availability = self.availability_score(
@@ -349,13 +360,7 @@ class SemanticRecommender:
                 self._normalise_text(event.get("date", "")),
             )
 
-            # Multi-factor weighted score.
-            #
-            # Semantic similarity: 40%
-            # Explicit skills:     30%
-            # Interests/category:  15%
-            # Proximity:           10%
-            # Availability:         5%
+            # Multi-factor weighted score calculation
             final_score = (
                 semantic_score * 0.40
                 + skill_score * 0.30
@@ -377,14 +382,13 @@ class SemanticRecommender:
             }
 
             event_copy = dict(event)
-
+            event_copy["id"] = str(event.get("id") or event.get("_id") or "")
             event_copy["matchScore"] = match_score
             event_copy["breakdown"] = breakdown
             event_copy["distanceKm"] = distance_km
             event_copy["matchedSkills"] = matched_skills
 
-            # Temporary deterministic reason.
-            # Groq-based explanation will be added in explainer.py.
+            # Deterministic fallback reason
             if matched_skills:
                 skill_text = ", ".join(matched_skills)
                 reason = (
@@ -398,10 +402,9 @@ class SemanticRecommender:
                 )
 
             event_copy["reason"] = reason
-
             results.append(event_copy)
 
-        # Highest match first.
+        # Sort by match score descending
         results.sort(
             key=lambda item: (
                 item.get("matchScore", 0),
@@ -414,11 +417,10 @@ class SemanticRecommender:
 
 
 # Backward-compatible function.
-# This allows existing code that calls recommend_events()
-# to continue working while we migrate the service.
 def recommend_events(
     user_data: Dict[str, Any],
     events_data: List[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
     recommender = SemanticRecommender()
     return recommender.recommend(user_data, events_data)
+

@@ -1,3 +1,21 @@
+import os
+import sys
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Ensure UTF-8 stdout & stderr on Windows
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
+# Load root .env
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+load_dotenv(PROJECT_ROOT / ".env")
+load_dotenv()  # local fallback
+
 from fastapi import FastAPI, HTTPException
 from typing import List, Dict, Any
 from pydantic import BaseModel
@@ -6,6 +24,7 @@ from config.settings import Settings
 from models.volunteer import Volunteer
 from models.campaign import Campaign
 from pipeline import RecommendationPipeline
+
 
 app = FastAPI(title="CivicEngage AI Volunteer Matching Service")
 settings = Settings()

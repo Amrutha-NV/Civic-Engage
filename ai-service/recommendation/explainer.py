@@ -1,6 +1,15 @@
 import os
+import sys
 from pathlib import Path
 from typing import Any, Dict, List
+
+# Ensure UTF-8 stdout on Windows
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 from dotenv import load_dotenv
 from groq import Groq
@@ -19,6 +28,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ENV_FILE = PROJECT_ROOT / ".env"
 
 load_dotenv(ENV_FILE)
+load_dotenv()  # local fallback
+
 
 
 # ============================================================
@@ -67,7 +78,6 @@ class RecommendationExplainer:
         Generates a deterministic explanation when Groq is
         unavailable or the LLM request fails.
         """
-
         matched_skills = recommendation.get(
             "matchedSkills",
             []
@@ -180,6 +190,7 @@ class RecommendationExplainer:
         If Groq is unavailable or fails, a deterministic
         fallback explanation is returned.
         """
+        title = recommendation.get("title", "this campaign")
 
         # ----------------------------------------------------
         # If no Groq API key is available
@@ -193,11 +204,6 @@ class RecommendationExplainer:
         # ----------------------------------------------------
         # Extract recommendation information
         # ----------------------------------------------------
-
-        title = recommendation.get(
-            "title",
-            "this campaign"
-        )
 
         description = recommendation.get(
             "description",
@@ -342,3 +348,4 @@ Keep the explanation under 40 words.
         return self._fallback_reason(
             recommendation
         )
+

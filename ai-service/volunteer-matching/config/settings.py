@@ -1,5 +1,13 @@
+import os
+from pathlib import Path
 from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Resolve absolute paths: parents[3] -> CivicEngage-final
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+ROOT_ENV = PROJECT_ROOT / ".env"
+LOCAL_ENV = Path(__file__).resolve().parents[1] / ".env"
+
 
 class Settings(BaseSettings):
     backend_base_url: str = "http://localhost:5000"
@@ -18,4 +26,9 @@ class Settings(BaseSettings):
     gemini_api_key: Optional[str] = None
     llm_provider: str = "groq"  # "groq", "openai", "gemini", or "fallback"
 
-    model_config = SettingsConfigDict(env_file=(".env", "../.env", "../../.env"), env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=(str(ROOT_ENV), str(LOCAL_ENV), ".env"),
+        env_file_encoding="utf-8",
+        extra="ignore"
+    )
+

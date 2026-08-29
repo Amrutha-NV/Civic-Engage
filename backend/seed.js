@@ -1,9 +1,12 @@
 
+const path = require("path");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bcrypt = require("bcryptjs");
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
+dotenv.config({ path: path.resolve(__dirname, ".env") });
+
 
 const User = require("./models/User");
 const NGO = require("./models/NGO");
