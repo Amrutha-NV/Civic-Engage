@@ -1,0 +1,31 @@
+{
+  "evaluation_timestamp": "2026-09-20T17:32:12.688711+00:00",
+  "model_artifact": "models/step37_t3_ranker.joblib",
+  "metadata_artifact": "models/step37_t3_metadata.joblib",
+  "conformal_artifact": "models/step37_t3_conformal.joblib",
+  "model_architecture": "T3_CoOccurrence_Bundle_Ranker",
+  "n_features": 176,
+  "frozen_test_n": 6755,
+  "date_min": "2025-01-02",
+  "date_max": "2026-07-31",
+  "primary_acc_10pct": 36.58,
+  "acc_5pct": 29.95,
+  "acc_20pct": 44.47,
+  "top3_pct": 48.73,
+  "top5_pct": 54.39,
+  "top10_pct": 63.97,
+  "mae": 5732.05,
+  "mdape": 30.0,
+  "log_rmse": 1.4422,
+  "high_dispersion_acc_10pct": 29.68,
+  "high_dispersion_n": 5287,
+  "candidate_oracle_10pct": 85.73,
+  "mean_candidate_count": 56.16,
+  "inference_failures": 0,
+  "frozen_test_access_count": 1,
+  "reliability_breakdown": {
+    "HIGH": 2951,
+    "MEDIUM": 1674,
+    "LOW": 2130
+  }
+}
