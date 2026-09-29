@@ -1,0 +1,23 @@
+{
+  "total_queries_analyzed": 10560,
+  "rank_1_successes": 3968,
+  "rank_1_failures": 6592,
+  "first_recovery_rank_counts": {
+    "rank_2": 706,
+    "rank_3": 447,
+    "rank_4": 340,
+    "rank_5": 256,
+    "rank_6": 233,
+    "rank_7": 183,
+    "rank_8": 179,
+    "rank_9": 148,
+    "rank_10": 156
+  },
+  "recovered_in_top_5_count": 1749,
+  "recovered_in_ranks_6_to_10_count": 899,
+  "total_recovered_in_top_10_count": 2648,
+  "no_recovery_within_top_10_count": 3944,
+  "recovered_in_top_5_pct_of_failures": 26.53,
+  "recovered_in_ranks_6_to_10_pct_of_failures": 13.64,
+  "total_recovered_in_top_10_pct_of_failures": 40.17
+}

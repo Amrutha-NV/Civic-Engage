@@ -1,0 +1,146 @@
+{
+  "validation_metadata": {
+    "target_rule": "composite_evidence = candidate_score_r1 - log_price_std_top10",
+    "evaluated_dataset": "frozen_evaluation_dataset.parquet",
+    "total_validation_queries": 10560,
+    "baseline_accuracies": {
+      "rank_1_accuracy_pct": 37.58,
+      "top_5_accuracy_pct": 54.14,
+      "top_10_accuracy_pct": 62.65,
+      "unrecoverable_pct": 37.35
+    },
+    "inference_safety_verification": {
+      "features_used_by_gate": [
+        "candidate_score (rank 1)",
+        "candidate_unit_price (ranks 1-10)"
+      ],
+      "prohibited_ground_truth_fields": [
+        "actual_unit_price",
+        "is_within_10pct",
+        "absolute_percentage_error"
+      ],
+      "is_inference_safe": true
+    },
+    "validation_timestamp": "2026-09-26 17:59:09 UTC"
+  },
+  "policy_2_recalculated_results": {
+    "threshold": 0.0,
+    "pass_count": 6643,
+    "rejection_count": 3917,
+    "pass_rate_pct": 62.91,
+    "rejection_rate_pct": 37.09,
+    "accepted_pool_top10_accuracy_pct": 77.18,
+    "accepted_pool_top5_accuracy_pct": 70.47,
+    "accepted_pool_rank1_accuracy_pct": 53.17,
+    "rejected_pool_top10_accuracy_pct": 38.01,
+    "rejected_pool_unrecoverable_pct": 61.99,
+    "top10_coverage_count": 5127,
+    "unrecoverable_correctly_filtered_count": 2428
+  },
+  "threshold_sensitivity_analysis": [
+    {
+      "threshold": -0.2,
+      "pass_count": 7163,
+      "rejection_count": 3397,
+      "pass_rate_pct": 67.83,
+      "rejection_rate_pct": 32.17,
+      "accepted_pool_top10_accuracy_pct": 75.62,
+      "accepted_pool_top5_accuracy_pct": 68.6,
+      "accepted_pool_rank1_accuracy_pct": 50.87,
+      "rejected_pool_top10_accuracy_pct": 35.3,
+      "rejected_pool_unrecoverable_pct": 64.7,
+      "confusion_matrix": {
+        "true_positives": 5417,
+        "false_positives": 1746,
+        "false_negatives": 1199,
+        "true_negatives": 2198
+      },
+      "precision_top10_in_accepted": 75.62,
+      "recall_recoverable_queries": 81.88
+    },
+    {
+      "threshold": -0.1,
+      "pass_count": 6889,
+      "rejection_count": 3671,
+      "pass_rate_pct": 65.24,
+      "rejection_rate_pct": 34.76,
+      "accepted_pool_top10_accuracy_pct": 76.5,
+      "accepted_pool_top5_accuracy_pct": 69.68,
+      "accepted_pool_rank1_accuracy_pct": 52.13,
+      "rejected_pool_top10_accuracy_pct": 36.67,
+      "rejected_pool_unrecoverable_pct": 63.33,
+      "confusion_matrix": {
+        "true_positives": 5270,
+        "false_positives": 1619,
+        "false_negatives": 1346,
+        "true_negatives": 2325
+      },
+      "precision_top10_in_accepted": 76.5,
+      "recall_recoverable_queries": 79.66
+    },
+    {
+      "threshold": 0.0,
+      "pass_count": 6643,
+      "rejection_count": 3917,
+      "pass_rate_pct": 62.91,
+      "rejection_rate_pct": 37.09,
+      "accepted_pool_top10_accuracy_pct": 77.18,
+      "accepted_pool_top5_accuracy_pct": 70.47,
+      "accepted_pool_rank1_accuracy_pct": 53.17,
+      "rejected_pool_top10_accuracy_pct": 38.01,
+      "rejected_pool_unrecoverable_pct": 61.99,
+      "confusion_matrix": {
+        "true_positives": 5127,
+        "false_positives": 1516,
+        "false_negatives": 1489,
+        "true_negatives": 2428
+      },
+      "precision_top10_in_accepted": 77.18,
+      "recall_recoverable_queries": 77.49
+    },
+    {
+      "threshold": 0.1,
+      "pass_count": 6355,
+      "rejection_count": 4205,
+      "pass_rate_pct": 60.18,
+      "rejection_rate_pct": 39.82,
+      "accepted_pool_top10_accuracy_pct": 78.03,
+      "accepted_pool_top5_accuracy_pct": 71.46,
+      "accepted_pool_rank1_accuracy_pct": 54.32,
+      "rejected_pool_top10_accuracy_pct": 39.41,
+      "rejected_pool_unrecoverable_pct": 60.59,
+      "confusion_matrix": {
+        "true_positives": 4959,
+        "false_positives": 1396,
+        "false_negatives": 1657,
+        "true_negatives": 2548
+      },
+      "precision_top10_in_accepted": 78.03,
+      "recall_recoverable_queries": 74.95
+    },
+    {
+      "threshold": 0.2,
+      "pass_count": 6089,
+      "rejection_count": 4471,
+      "pass_rate_pct": 57.66,
+      "rejection_rate_pct": 42.34,
+      "accepted_pool_top10_accuracy_pct": 78.72,
+      "accepted_pool_top5_accuracy_pct": 72.31,
+      "accepted_pool_rank1_accuracy_pct": 55.44,
+      "rejected_pool_top10_accuracy_pct": 40.77,
+      "rejected_pool_unrecoverable_pct": 59.23,
+      "confusion_matrix": {
+        "true_positives": 4793,
+        "false_positives": 1296,
+        "false_negatives": 1823,
+        "true_negatives": 2648
+      },
+      "precision_top10_in_accepted": 78.72,
+      "recall_recoverable_queries": 72.45
+    }
+  ],
+  "recommendation": {
+    "status": "ACCEPTED_AS_RESEARCH_BASELINE",
+    "rationale": "Threshold 0.0 provides a statistically sound, smooth, zero-centered inflection point balancing high pool accuracy (+14.53% Top-10 gain) with strong recovery coverage (77.49% of all recoverable queries retained) and zero cliff-edge sensitivity."
+  }
+}
