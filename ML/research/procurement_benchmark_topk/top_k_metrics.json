@@ -1,0 +1,19 @@
+{
+  "validation_queries_total": 10560,
+  "queries_with_candidates": 10560,
+  "candidate_coverage_pct": 100.0,
+  "rank_1_accuracy_10pct": 37.57,
+  "top_3_accuracy_10pct": 48.49,
+  "top_5_accuracy_10pct": 54.14,
+  "top_10_accuracy_10pct": 62.64,
+  "rank_1_hits": 3967,
+  "top_3_hits": 5121,
+  "top_5_hits": 5717,
+  "top_10_hits": 6615,
+  "rank1_outside_10pct_but_top5_within_10pct_count": 1750,
+  "rank1_outside_10pct_but_top5_within_10pct_pct": 16.57,
+  "rank1_outside_10pct_but_top10_within_10pct_count": 2648,
+  "rank1_outside_10pct_but_top10_within_10pct_pct": 25.08,
+  "total_top_10_records_generated": 105600,
+  "runtime_seconds": 194.86
+}

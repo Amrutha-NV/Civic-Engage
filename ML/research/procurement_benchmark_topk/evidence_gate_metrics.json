@@ -1,0 +1,773 @@
+{
+  "dataset_metadata": {
+    "source_file": "frozen_evaluation_dataset.parquet",
+    "total_records": 105600,
+    "total_queries": 10560,
+    "candidates_per_query": 10,
+    "verified_schema": [
+      "query_index",
+      "target_description",
+      "target_quantity",
+      "target_unit_of_measure",
+      "target_procurement_date",
+      "target_city",
+      "target_state",
+      "target_brand",
+      "target_model",
+      "target_commodity_code",
+      "target_commodity_family",
+      "candidate_rank",
+      "candidate_description",
+      "candidate_unit_price",
+      "candidate_score",
+      "actual_unit_price",
+      "absolute_percentage_error",
+      "is_within_10pct"
+    ]
+  },
+  "overall_benchmark_metrics": {
+    "total_validation_queries": 10560,
+    "candidates_per_query": 10,
+    "rank_1_accuracy_pct": 37.58,
+    "top_3_accuracy_pct": 48.49,
+    "top_5_accuracy_pct": 54.14,
+    "top_10_accuracy_pct": 62.65,
+    "rank_1_hits": 3968,
+    "top_3_hits": 5121,
+    "top_5_hits": 5717,
+    "top_10_hits": 6616,
+    "rank_1_failures_total": 6592,
+    "recovery_by_top_5_count": 1749,
+    "recovery_by_top_5_pct_of_total": 16.56,
+    "recovery_by_top_5_pct_of_failures": 26.53,
+    "recovery_by_top_10_count": 2648,
+    "recovery_by_top_10_pct_of_total": 25.08,
+    "recovery_by_top_10_pct_of_failures": 40.17,
+    "completely_unrecoverable_count": 3944,
+    "completely_unrecoverable_pct": 37.35
+  },
+  "signal_distributions": {
+    "candidate_score_rank_1": {
+      "count": 10560,
+      "mean": 1.2179,
+      "std": 0.8976,
+      "min": -1.9289,
+      "p5": -0.0682,
+      "p10": 0.0873,
+      "p25": 0.4694,
+      "p50_median": 1.1588,
+      "p75": 1.8996,
+      "p90": 2.4525,
+      "p95": 2.7686,
+      "max": 3.8513,
+      "iqr": 1.4302
+    },
+    "candidate_score_rank_2": {
+      "count": 10560,
+      "mean": 0.8932,
+      "std": 0.831,
+      "min": -2.462,
+      "p5": -0.2198,
+      "p10": -0.0671,
+      "p25": 0.2209,
+      "p50_median": 0.8084,
+      "p75": 1.4859,
+      "p90": 2.0823,
+      "p95": 2.3624,
+      "max": 3.4919,
+      "iqr": 1.265
+    },
+    "candidate_score_rank_3": {
+      "count": 10560,
+      "mean": 0.663,
+      "std": 0.7699,
+      "min": -2.7003,
+      "p5": -0.3444,
+      "p10": -0.1772,
+      "p25": 0.0919,
+      "p50_median": 0.5475,
+      "p75": 1.1573,
+      "p90": 1.7728,
+      "p95": 2.0696,
+      "max": 3.2424,
+      "iqr": 1.0654
+    },
+    "candidate_score_rank_5": {
+      "count": 10560,
+      "mean": 0.4025,
+      "std": 0.7223,
+      "min": -3.3846,
+      "p5": -0.5783,
+      "p10": -0.3379,
+      "p25": -0.0565,
+      "p50_median": 0.2729,
+      "p75": 0.8552,
+      "p90": 1.4018,
+      "p95": 1.716,
+      "max": 3.1807,
+      "iqr": 0.9117
+    },
+    "candidate_score_rank_10": {
+      "count": 10560,
+      "mean": 0.039,
+      "std": 0.7018,
+      "min": -3.8672,
+      "p5": -1.1741,
+      "p10": -0.7072,
+      "p25": -0.2699,
+      "p50_median": 0.01,
+      "p75": 0.4477,
+      "p90": 0.8719,
+      "p95": 1.1839,
+      "max": 2.6651,
+      "iqr": 0.7176
+    },
+    "candidate_score_top5_mean": {
+      "count": 10560,
+      "mean": 0.7387,
+      "std": 0.7377,
+      "min": -2.1322,
+      "p5": -0.2439,
+      "p10": -0.1034,
+      "p25": 0.1732,
+      "p50_median": 0.6437,
+      "p75": 1.2276,
+      "p90": 1.795,
+      "p95": 2.0607,
+      "max": 3.2898,
+      "iqr": 1.0544
+    },
+    "candidate_score_top10_mean": {
+      "count": 10560,
+      "mean": 0.4512,
+      "std": 0.6693,
+      "min": -2.9565,
+      "p5": -0.4866,
+      "p10": -0.2669,
+      "p25": 0.0009,
+      "p50_median": 0.3488,
+      "p75": 0.884,
+      "p90": 1.374,
+      "p95": 1.6653,
+      "max": 3.0581,
+      "iqr": 0.8831
+    },
+    "candidate_score_margin_1_2": {
+      "count": 10560,
+      "mean": 0.3247,
+      "std": 0.4345,
+      "min": 0.0,
+      "p5": 0.01,
+      "p10": 0.022,
+      "p25": 0.0668,
+      "p50_median": 0.1776,
+      "p75": 0.404,
+      "p90": 0.7944,
+      "p95": 1.142,
+      "max": 5.3338,
+      "iqr": 0.3372
+    },
+    "candidate_score_margin_1_10": {
+      "count": 10560,
+      "mean": 1.1789,
+      "std": 0.9243,
+      "min": 0.0261,
+      "p5": 0.2465,
+      "p10": 0.3287,
+      "p25": 0.5312,
+      "p50_median": 0.9083,
+      "p75": 1.5365,
+      "p90": 2.3804,
+      "p95": 3.0657,
+      "max": 6.9658,
+      "iqr": 1.0053
+    },
+    "price_dispersion_log_std_top10": {
+      "count": 10560,
+      "mean": 0.6895,
+      "std": 0.6045,
+      "min": 0.0,
+      "p5": 0.0,
+      "p10": 0.0364,
+      "p25": 0.1677,
+      "p50_median": 0.553,
+      "p75": 1.1034,
+      "p90": 1.5751,
+      "p95": 1.8255,
+      "max": 4.6111,
+      "iqr": 0.9358
+    },
+    "price_dispersion_log_std_top5": {
+      "count": 10560,
+      "mean": 0.5652,
+      "std": 0.5965,
+      "min": 0.0,
+      "p5": 0.0,
+      "p10": 0.0,
+      "p25": 0.0814,
+      "p50_median": 0.3488,
+      "p75": 0.9018,
+      "p90": 1.4492,
+      "p95": 1.8207,
+      "max": 3.6361,
+      "iqr": 0.8204
+    },
+    "price_dispersion_cv_top10": {
+      "count": 10560,
+      "mean": 0.6565,
+      "std": 0.5808,
+      "min": 0.0,
+      "p5": 0.0,
+      "p10": 0.0383,
+      "p25": 0.1761,
+      "p50_median": 0.5083,
+      "p75": 1.0298,
+      "p90": 1.4666,
+      "p95": 1.775,
+      "max": 3.0822,
+      "iqr": 0.8537
+    },
+    "price_dispersion_cv_top5": {
+      "count": 10560,
+      "mean": 0.5194,
+      "std": 0.5052,
+      "min": 0.0,
+      "p5": 0.0,
+      "p10": 0.0,
+      "p25": 0.0898,
+      "p50_median": 0.3734,
+      "p75": 0.8298,
+      "p90": 1.2655,
+      "p95": 1.5366,
+      "max": 2.2321,
+      "iqr": 0.74
+    },
+    "price_ratio_max_min_top10": {
+      "count": 10560,
+      "mean": 80.3399,
+      "std": 1304.1486,
+      "min": 1.0,
+      "p5": 1.0,
+      "p10": 1.1,
+      "p25": 1.629,
+      "p50_median": 5.7215,
+      "p75": 32.9018,
+      "p90": 129.0809,
+      "p95": 266.0916,
+      "max": 126078.3286,
+      "iqr": 31.2728
+    },
+    "composite_evidence_score": {
+      "count": 10560,
+      "mean": 0.5284,
+      "std": 1.2986,
+      "min": -4.7051,
+      "p5": -1.5379,
+      "p10": -1.1983,
+      "p25": -0.4923,
+      "p50_median": 0.525,
+      "p75": 1.5653,
+      "p90": 2.2601,
+      "p95": 2.5905,
+      "max": 3.8079,
+      "iqr": 2.0576
+    },
+    "top_1_absolute_percentage_error": {
+      "count": 10560,
+      "mean": 1206.5149,
+      "std": 20414.4836,
+      "min": 0.0,
+      "p5": 0.0,
+      "p10": 0.0,
+      "p25": 0.2007,
+      "p50_median": 26.9487,
+      "p75": 87.1758,
+      "p90": 521.2561,
+      "p95": 1660.8385,
+      "max": 1659930.0,
+      "iqr": 86.9751
+    }
+  },
+  "feature_predictive_power": {
+    "score_r1": {
+      "roc_auc_top10_hit": 0.7381,
+      "roc_auc_top5_hit": 0.7515,
+      "roc_auc_rank1_hit": 0.7834,
+      "pearson_corr_top10_hit": 0.3952,
+      "pearson_corr_rank1_hit": 0.48
+    },
+    "score_r2": {
+      "roc_auc_top10_hit": 0.7281,
+      "roc_auc_top5_hit": 0.7348,
+      "roc_auc_rank1_hit": 0.7593,
+      "pearson_corr_top10_hit": 0.3739,
+      "pearson_corr_rank1_hit": 0.4393
+    },
+    "score_top5_mean": {
+      "roc_auc_top10_hit": 0.7301,
+      "roc_auc_top5_hit": 0.7361,
+      "roc_auc_rank1_hit": 0.7581,
+      "pearson_corr_top10_hit": 0.374,
+      "pearson_corr_rank1_hit": 0.4332
+    },
+    "score_top10_mean": {
+      "roc_auc_top10_hit": 0.7031,
+      "roc_auc_top5_hit": 0.7048,
+      "roc_auc_rank1_hit": 0.7163,
+      "pearson_corr_top10_hit": 0.3181,
+      "pearson_corr_rank1_hit": 0.3505
+    },
+    "score_margin_1_2": {
+      "roc_auc_top10_hit": 0.572,
+      "roc_auc_top5_hit": 0.5852,
+      "roc_auc_rank1_hit": 0.5907,
+      "pearson_corr_top10_hit": 0.1014,
+      "pearson_corr_rank1_hit": 0.1515
+    },
+    "score_margin_1_10": {
+      "roc_auc_top10_hit": 0.6703,
+      "roc_auc_top5_hit": 0.6866,
+      "roc_auc_rank1_hit": 0.719,
+      "pearson_corr_top10_hit": 0.2534,
+      "pearson_corr_rank1_hit": 0.3485
+    },
+    "neg_log_price_std_top10": {
+      "roc_auc_top10_hit": 0.7172,
+      "roc_auc_top5_hit": 0.7383,
+      "roc_auc_rank1_hit": 0.7707,
+      "pearson_corr_top10_hit": -0.3555,
+      "pearson_corr_rank1_hit": -0.4008
+    },
+    "neg_log_price_std_top5": {
+      "roc_auc_top10_hit": 0.7132,
+      "roc_auc_top5_hit": 0.7311,
+      "roc_auc_rank1_hit": 0.7856,
+      "pearson_corr_top10_hit": -0.3396,
+      "pearson_corr_rank1_hit": -0.3931
+    },
+    "neg_price_cv_top10": {
+      "roc_auc_top10_hit": 0.7066,
+      "roc_auc_top5_hit": 0.7296,
+      "roc_auc_rank1_hit": 0.7649,
+      "pearson_corr_top10_hit": -0.3205,
+      "pearson_corr_rank1_hit": -0.374
+    },
+    "neg_price_cv_top5": {
+      "roc_auc_top10_hit": 0.7076,
+      "roc_auc_top5_hit": 0.7271,
+      "roc_auc_rank1_hit": 0.7845,
+      "pearson_corr_top10_hit": -0.3248,
+      "pearson_corr_rank1_hit": -0.4025
+    },
+    "neg_price_ratio_top10": {
+      "roc_auc_top10_hit": 0.7186,
+      "roc_auc_top5_hit": 0.7402,
+      "roc_auc_rank1_hit": 0.773,
+      "pearson_corr_top10_hit": -0.021,
+      "pearson_corr_rank1_hit": -0.0307
+    },
+    "composite_evidence_score": {
+      "roc_auc_top10_hit": 0.763,
+      "roc_auc_top5_hit": 0.7794,
+      "roc_auc_rank1_hit": 0.8099,
+      "pearson_corr_top10_hit": 0.4387,
+      "pearson_corr_rank1_hit": 0.5184
+    }
+  },
+  "quintile_breakdown": {
+    "score_r1_quintiles": [
+      {
+        "quintile_bin": "(-1.93, 0.341]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 8.33,
+        "top5_accuracy_pct": 22.16,
+        "top10_accuracy_pct": 32.91,
+        "unrecoverable_pct": 67.09
+      },
+      {
+        "quintile_bin": "(0.341, 0.889]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 20.55,
+        "top5_accuracy_pct": 40.53,
+        "top10_accuracy_pct": 51.23,
+        "unrecoverable_pct": 48.77
+      },
+      {
+        "quintile_bin": "(0.889, 1.428]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 36.7,
+        "top5_accuracy_pct": 57.29,
+        "top10_accuracy_pct": 66.48,
+        "unrecoverable_pct": 33.52
+      },
+      {
+        "quintile_bin": "(1.428, 2.08]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 48.3,
+        "top5_accuracy_pct": 66.52,
+        "top10_accuracy_pct": 73.91,
+        "unrecoverable_pct": 26.09
+      },
+      {
+        "quintile_bin": "(2.08, 3.851]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 74.01,
+        "top5_accuracy_pct": 84.19,
+        "top10_accuracy_pct": 88.73,
+        "unrecoverable_pct": 11.27
+      }
+    ],
+    "log_price_std_top10_quintiles": [
+      {
+        "quintile_bin": "(-0.001, 0.12]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 74.72,
+        "top5_accuracy_pct": 81.63,
+        "top10_accuracy_pct": 83.95,
+        "unrecoverable_pct": 16.05
+      },
+      {
+        "quintile_bin": "(0.12, 0.338]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 50.57,
+        "top5_accuracy_pct": 72.54,
+        "top10_accuracy_pct": 79.88,
+        "unrecoverable_pct": 20.12
+      },
+      {
+        "quintile_bin": "(0.338, 0.766]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 28.88,
+        "top5_accuracy_pct": 51.99,
+        "top10_accuracy_pct": 62.31,
+        "unrecoverable_pct": 37.69
+      },
+      {
+        "quintile_bin": "(0.766, 1.234]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 20.03,
+        "top5_accuracy_pct": 37.17,
+        "top10_accuracy_pct": 49.38,
+        "unrecoverable_pct": 50.62
+      },
+      {
+        "quintile_bin": "(1.234, 4.611]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 13.68,
+        "top5_accuracy_pct": 27.37,
+        "top10_accuracy_pct": 37.74,
+        "unrecoverable_pct": 62.26
+      }
+    ],
+    "composite_evidence_quintiles": [
+      {
+        "quintile_bin": "(-0.703, 0.109]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 17.47,
+        "top5_accuracy_pct": 36.46,
+        "top10_accuracy_pct": 48.11,
+        "unrecoverable_pct": 51.89
+      },
+      {
+        "quintile_bin": "(-4.706, -0.703]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 7.15,
+        "top5_accuracy_pct": 19.51,
+        "top10_accuracy_pct": 30.73,
+        "unrecoverable_pct": 69.27
+      },
+      {
+        "quintile_bin": "(0.109, 0.919]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 34.47,
+        "top5_accuracy_pct": 57.53,
+        "top10_accuracy_pct": 66.24,
+        "unrecoverable_pct": 33.76
+      },
+      {
+        "quintile_bin": "(0.919, 1.798]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 52.51,
+        "top5_accuracy_pct": 72.4,
+        "top10_accuracy_pct": 79.36,
+        "unrecoverable_pct": 20.64
+      },
+      {
+        "quintile_bin": "(1.798, 3.808]",
+        "query_count": 2112,
+        "rank1_accuracy_pct": 76.28,
+        "top5_accuracy_pct": 84.8,
+        "top10_accuracy_pct": 88.83,
+        "unrecoverable_pct": 11.17
+      }
+    ]
+  },
+  "gate_policies": {
+    "policy_1_permissive": {
+      "policy_name": "Permissive Gate (High Coverage)",
+      "description": "composite_evidence >= -1.0 (filters out bottom ~13% toxic candidate pools)",
+      "passed_queries_count": 9139,
+      "pass_rate_pct": 86.54,
+      "passed_top10_accuracy_pct": 67.92,
+      "passed_top5_accuracy_pct": 59.66,
+      "passed_rank1_accuracy_pct": 42.38,
+      "rejected_queries_count": 1421,
+      "rejection_rate_pct": 13.46,
+      "rejected_top10_accuracy_pct": 28.78,
+      "rejected_completely_unrecoverable_pct": 71.22,
+      "true_positives": 6207,
+      "false_positives_unrecoverable_passed_to_llm": 2932,
+      "false_negatives_diverted_to_person3": 409,
+      "true_negatives_correctly_rejected_junk": 1012,
+      "precision_top10_in_passed": 67.92,
+      "recall_recoverable_queries_retained": 93.82
+    },
+    "policy_2_balanced_default": {
+      "policy_name": "Balanced Gate (Recommended Default)",
+      "description": "composite_evidence >= 0.0 (filters out ~37% low-confidence/high-dispersion pools)",
+      "passed_queries_count": 6643,
+      "pass_rate_pct": 62.91,
+      "passed_top10_accuracy_pct": 77.18,
+      "passed_top5_accuracy_pct": 70.47,
+      "passed_rank1_accuracy_pct": 53.17,
+      "rejected_queries_count": 3917,
+      "rejection_rate_pct": 37.09,
+      "rejected_top10_accuracy_pct": 38.01,
+      "rejected_completely_unrecoverable_pct": 61.99,
+      "true_positives": 5127,
+      "false_positives_unrecoverable_passed_to_llm": 1516,
+      "false_negatives_diverted_to_person3": 1489,
+      "true_negatives_correctly_rejected_junk": 2428,
+      "precision_top10_in_passed": 77.18,
+      "recall_recoverable_queries_retained": 77.49
+    },
+    "policy_3_strict": {
+      "policy_name": "Strict Gate (High Precision)",
+      "description": "composite_evidence >= 0.7 (retains top ~46% highest quality historical pools)",
+      "passed_queries_count": 4823,
+      "pass_rate_pct": 45.67,
+      "passed_top10_accuracy_pct": 82.52,
+      "passed_top5_accuracy_pct": 76.65,
+      "passed_rank1_accuracy_pct": 61.7,
+      "rejected_queries_count": 5737,
+      "rejection_rate_pct": 54.33,
+      "rejected_top10_accuracy_pct": 45.95,
+      "rejected_completely_unrecoverable_pct": 54.05,
+      "true_positives": 3980,
+      "false_positives_unrecoverable_passed_to_llm": 843,
+      "false_negatives_diverted_to_person3": 2636,
+      "true_negatives_correctly_rejected_junk": 3101,
+      "precision_top10_in_passed": 82.52,
+      "recall_recoverable_queries_retained": 60.16
+    },
+    "policy_4_dual_rule_balanced": {
+      "policy_name": "Dual-Threshold Rule (Score >= 0.5 AND LogPriceStd <= 1.0)",
+      "description": "Explicit dual threshold on candidate_score_r1 >= 0.5 and log_price_std_top10 <= 1.0",
+      "passed_queries_count": 6113,
+      "pass_rate_pct": 57.89,
+      "passed_top10_accuracy_pct": 78.23,
+      "passed_top5_accuracy_pct": 71.45,
+      "passed_rank1_accuracy_pct": 54.31,
+      "rejected_queries_count": 4447,
+      "rejection_rate_pct": 42.11,
+      "rejected_top10_accuracy_pct": 41.24,
+      "rejected_completely_unrecoverable_pct": 58.76,
+      "true_positives": 4782,
+      "false_positives_unrecoverable_passed_to_llm": 1331,
+      "false_negatives_diverted_to_person3": 1834,
+      "true_negatives_correctly_rejected_junk": 2613,
+      "precision_top10_in_passed": 78.23,
+      "recall_recoverable_queries_retained": 72.28
+    },
+    "policy_5_dual_rule_permissive": {
+      "policy_name": "Dual-Threshold Permissive (Score >= 0.0 AND LogPriceStd <= 1.5)",
+      "description": "Explicit dual threshold on candidate_score_r1 >= 0.0 and log_price_std_top10 <= 1.5",
+      "passed_queries_count": 8738,
+      "pass_rate_pct": 82.75,
+      "passed_top10_accuracy_pct": 68.72,
+      "passed_top5_accuracy_pct": 60.44,
+      "passed_rank1_accuracy_pct": 43.12,
+      "rejected_queries_count": 1822,
+      "rejection_rate_pct": 17.25,
+      "rejected_top10_accuracy_pct": 33.53,
+      "rejected_completely_unrecoverable_pct": 66.47,
+      "true_positives": 6005,
+      "false_positives_unrecoverable_passed_to_llm": 2733,
+      "false_negatives_diverted_to_person3": 611,
+      "true_negatives_correctly_rejected_junk": 1211,
+      "precision_top10_in_passed": 68.72,
+      "recall_recoverable_queries_retained": 90.76
+    }
+  },
+  "threshold_sweep": [
+    {
+      "threshold": -1.5,
+      "pass_rate_pct": 94.64,
+      "passed_count": 9994,
+      "passed_top10_acc_pct": 64.99,
+      "passed_top5_acc_pct": 56.42,
+      "passed_r1_acc_pct": 39.42,
+      "rejected_count": 566,
+      "rejected_top10_acc_pct": 21.38,
+      "rejected_unrecoverable_pct": 78.62
+    },
+    {
+      "threshold": -1.25,
+      "pass_rate_pct": 90.88,
+      "passed_count": 9597,
+      "passed_top10_acc_pct": 66.19,
+      "passed_top5_acc_pct": 57.74,
+      "passed_r1_acc_pct": 40.7,
+      "rejected_count": 963,
+      "rejected_top10_acc_pct": 27.41,
+      "rejected_unrecoverable_pct": 72.59
+    },
+    {
+      "threshold": -1.0,
+      "pass_rate_pct": 86.54,
+      "passed_count": 9139,
+      "passed_top10_acc_pct": 67.92,
+      "passed_top5_acc_pct": 59.66,
+      "passed_r1_acc_pct": 42.38,
+      "rejected_count": 1421,
+      "rejected_top10_acc_pct": 28.78,
+      "rejected_unrecoverable_pct": 71.22
+    },
+    {
+      "threshold": -0.75,
+      "pass_rate_pct": 81.11,
+      "passed_count": 8565,
+      "passed_top10_acc_pct": 70.16,
+      "passed_top5_acc_pct": 62.32,
+      "passed_r1_acc_pct": 44.67,
+      "rejected_count": 1995,
+      "rejected_top10_acc_pct": 30.43,
+      "rejected_unrecoverable_pct": 69.57
+    },
+    {
+      "threshold": -0.5,
+      "pass_rate_pct": 75.17,
+      "passed_count": 7938,
+      "passed_top10_acc_pct": 72.55,
+      "passed_top5_acc_pct": 65.03,
+      "passed_r1_acc_pct": 47.3,
+      "rejected_count": 2622,
+      "rejected_top10_acc_pct": 32.68,
+      "rejected_unrecoverable_pct": 67.32
+    },
+    {
+      "threshold": -0.25,
+      "pass_rate_pct": 69.28,
+      "passed_count": 7316,
+      "passed_top10_acc_pct": 75.1,
+      "passed_top5_acc_pct": 67.95,
+      "passed_r1_acc_pct": 50.21,
+      "rejected_count": 3244,
+      "rejected_top10_acc_pct": 34.59,
+      "rejected_unrecoverable_pct": 65.41
+    },
+    {
+      "threshold": 0.0,
+      "pass_rate_pct": 62.91,
+      "passed_count": 6643,
+      "passed_top10_acc_pct": 77.18,
+      "passed_top5_acc_pct": 70.47,
+      "passed_r1_acc_pct": 53.17,
+      "rejected_count": 3917,
+      "rejected_top10_acc_pct": 38.01,
+      "rejected_unrecoverable_pct": 61.99
+    },
+    {
+      "threshold": 0.25,
+      "pass_rate_pct": 56.36,
+      "passed_count": 5952,
+      "passed_top10_acc_pct": 79.05,
+      "passed_top5_acc_pct": 72.63,
+      "passed_r1_acc_pct": 55.98,
+      "rejected_count": 4608,
+      "rejected_top10_acc_pct": 41.47,
+      "rejected_unrecoverable_pct": 58.53
+    },
+    {
+      "threshold": 0.5,
+      "pass_rate_pct": 50.56,
+      "passed_count": 5339,
+      "passed_top10_acc_pct": 81.19,
+      "passed_top5_acc_pct": 74.9,
+      "passed_r1_acc_pct": 59.07,
+      "rejected_count": 5221,
+      "rejected_top10_acc_pct": 43.69,
+      "rejected_unrecoverable_pct": 56.31
+    },
+    {
+      "threshold": 0.75,
+      "pass_rate_pct": 44.22,
+      "passed_count": 4670,
+      "passed_top10_acc_pct": 83.17,
+      "passed_top5_acc_pct": 77.34,
+      "passed_r1_acc_pct": 62.53,
+      "rejected_count": 5890,
+      "rejected_top10_acc_pct": 46.38,
+      "rejected_unrecoverable_pct": 53.62
+    },
+    {
+      "threshold": 1.0,
+      "pass_rate_pct": 37.77,
+      "passed_count": 3989,
+      "passed_top10_acc_pct": 84.48,
+      "passed_top5_acc_pct": 79.19,
+      "passed_r1_acc_pct": 65.91,
+      "rejected_count": 6571,
+      "rejected_top10_acc_pct": 49.4,
+      "rejected_unrecoverable_pct": 50.6
+    },
+    {
+      "threshold": 1.25,
+      "pass_rate_pct": 32.23,
+      "passed_count": 3403,
+      "passed_top10_acc_pct": 85.57,
+      "passed_top5_acc_pct": 80.55,
+      "passed_r1_acc_pct": 68.47,
+      "rejected_count": 7157,
+      "rejected_top10_acc_pct": 51.75,
+      "rejected_unrecoverable_pct": 48.25
+    },
+    {
+      "threshold": 1.5,
+      "pass_rate_pct": 26.52,
+      "passed_count": 2800,
+      "passed_top10_acc_pct": 86.21,
+      "passed_top5_acc_pct": 81.82,
+      "passed_r1_acc_pct": 71.43,
+      "rejected_count": 7760,
+      "rejected_top10_acc_pct": 54.15,
+      "rejected_unrecoverable_pct": 45.85
+    },
+    {
+      "threshold": 1.75,
+      "pass_rate_pct": 21.03,
+      "passed_count": 2221,
+      "passed_top10_acc_pct": 88.52,
+      "passed_top5_acc_pct": 84.42,
+      "passed_r1_acc_pct": 75.42,
+      "rejected_count": 8339,
+      "rejected_top10_acc_pct": 55.76,
+      "rejected_unrecoverable_pct": 44.24
+    },
+    {
+      "threshold": 2.0,
+      "pass_rate_pct": 15.68,
+      "passed_count": 1656,
+      "passed_top10_acc_pct": 91.12,
+      "passed_top5_acc_pct": 87.74,
+      "passed_r1_acc_pct": 80.98,
+      "rejected_count": 8904,
+      "rejected_top10_acc_pct": 57.36,
+      "rejected_unrecoverable_pct": 42.64
+    }
+  ],
+  "execution_summary": {
+    "runtime_seconds": 0.56,
+    "evaluation_timestamp": "2026-09-26 17:50:10 UTC"
+  }
+}
