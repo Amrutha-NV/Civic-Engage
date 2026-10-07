@@ -29,7 +29,8 @@ import math
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+import re
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import joblib
 import numpy as np
@@ -262,6 +263,168 @@ def classify_reliability(
 
 
 # --------------------------------------------------------------------------- #
+#  Selective MMR Compact Top-10 Selection Helpers                              #
+# --------------------------------------------------------------------------- #
+# Frozen research policy:
+# - Candidate similarity: 0.50 * key_match + 0.30 * po_match + 0.20 * jaccard
+# - Pre-answer gate: max_pairwise_similarity <= 0.98 among canonical Top-10
+# - If gate triggers: MMR (lambda=0.6) over Top-30 candidate pool -> Compact Top-10
+# - If gate does not trigger: Retain Canonical Top-10
+# - Rank-1 benchmark prediction is ALWAYS preserved identically
+def _get_candidate_tokens(text: str) -> Set[str]:
+    return set(re.findall(r"[A-Za-z0-9]+", str(text).upper()))
+
+
+def _jaccard_similarity(s1: Set[str], s2: Set[str]) -> float:
+    if not s1 or not s2:
+        return 0.0
+    u = len(s1 | s2)
+    return len(s1 & s2) / u if u > 0 else 0.0
+
+
+def _build_stratified_identity(cand: Dict[str, Any]) -> str:
+    raw_pk = str(cand.get("product_identity_key", "")).strip()
+    comm = str(cand.get("commodity_code", "")).strip()
+    uom = str(cand.get("uom_standardized") or cand.get("UNIT_OF_MEASURE") or "EA").strip().upper()
+
+    if raw_pk and "GENERIC" not in raw_pk:
+        return raw_pk
+
+    desc = str(cand.get("product_text_normalized") or cand.get("COMMODITY_DESCRIPTION") or "")
+    tokens = [t.upper() for t in re.findall(r"[A-Za-z0-9]+", desc)][:4]
+    desc_str = "_".join(tokens) if tokens else "GENERIC"
+    return f"{comm}|GENERIC|{desc_str}|{uom}"
+
+
+def compute_candidate_similarity(c1: Dict[str, Any], c2: Dict[str, Any]) -> float:
+    key_match = 1.0 if c1.get("strat_key") == c2.get("strat_key") else 0.0
+    c1_po = str(c1.get("PURCHASE_ORDER") or c1.get("po") or "")
+    c2_po = str(c2.get("PURCHASE_ORDER") or c2.get("po") or "")
+    po_match = 1.0 if (c1_po and c1_po == c2_po) else 0.0
+    tokens1 = c1.get("tokens") or _get_candidate_tokens(c1.get("product_text_normalized") or c1.get("COMMODITY_DESCRIPTION") or "")
+    tokens2 = c2.get("tokens") or _get_candidate_tokens(c2.get("product_text_normalized") or c2.get("COMMODITY_DESCRIPTION") or "")
+    jaccard = _jaccard_similarity(tokens1, tokens2)
+    return 0.50 * key_match + 0.30 * po_match + 0.20 * jaccard
+
+
+def run_mmr_selection(
+    cands: List[Dict[str, Any]],
+    scores: np.ndarray,
+    lam: float = 0.6,
+    k_select: int = 10,
+) -> List[int]:
+    n_cands = len(cands)
+    if n_cands <= k_select:
+        return list(range(n_cands))
+
+    s_min = float(np.min(scores))
+    s_max = float(np.max(scores))
+    s_range = max(s_max - s_min, 1e-8)
+    rel_scores = (scores - s_min) / s_range
+
+    sim_matrix = np.zeros((n_cands, n_cands), dtype=np.float32)
+    for i in range(n_cands):
+        sim_matrix[i, i] = 1.0
+        for j in range(i + 1, n_cands):
+            s = compute_candidate_similarity(cands[i], cands[j])
+            sim_matrix[i, j] = s
+            sim_matrix[j, i] = s
+
+    selected = [0]
+    unselected = set(range(1, n_cands))
+
+    while len(selected) < k_select and unselected:
+        best_cand = -1
+        best_mmr_score = -float("inf")
+
+        for u in unselected:
+            max_sim = max(sim_matrix[u, s] for s in selected)
+            mmr_score = lam * rel_scores[u] - (1.0 - lam) * max_sim
+
+            if mmr_score > best_mmr_score:
+                best_mmr_score = mmr_score
+                best_cand = u
+
+        selected.append(best_cand)
+        unselected.remove(best_cand)
+
+    return selected
+
+
+def select_compact_top10(
+    candidates: List[Dict[str, Any]],
+    scores: np.ndarray,
+    similarity_threshold: float = 0.98,
+    mmr_lambda: float = 0.6,
+    k_compact: int = 10,
+    top_n_pool: int = 30,
+) -> Tuple[List[Dict[str, Any]], bool, float]:
+    """
+    Select compact Top-10 candidates using frozen Selective MMR policy.
+    Returns:
+        (compact_top10_candidates, selective_mmr_triggered, max_pairwise_similarity)
+    """
+    n_cands = len(candidates)
+    if n_cands == 0:
+        return [], False, 0.0
+
+    sort_idx = np.argsort(-scores)
+    top_pool_indices = sort_idx[:min(top_n_pool, n_cands)]
+    top_pool_cands = [candidates[i] for i in top_pool_indices]
+    top_pool_scores = scores[top_pool_indices]
+
+    # Pre-populate similarity attributes
+    proc_cands = []
+    for pos, c in enumerate(top_pool_cands):
+        c_copy = dict(c)
+        c_copy["score"] = float(top_pool_scores[pos])
+        c_copy["strat_key"] = _build_stratified_identity(c)
+        c_copy["po"] = str(c.get("PURCHASE_ORDER") or "")
+        c_copy["tokens"] = _get_candidate_tokens(c.get("product_text_normalized") or c.get("COMMODITY_DESCRIPTION") or "")
+        proc_cands.append(c_copy)
+
+    # Compute max_pairwise_similarity on canonical Top-10
+    n_top = min(k_compact, len(proc_cands))
+    pair_sims = []
+    for a in range(n_top):
+        for b in range(a + 1, n_top):
+            pair_sims.append(compute_candidate_similarity(proc_cands[a], proc_cands[b]))
+
+    max_pairwise_sim = float(max(pair_sims)) if pair_sims else 0.0
+
+    # Gate: Trigger MMR when max_pairwise_similarity <= threshold
+    triggered = bool(len(proc_cands) > k_compact and max_pairwise_sim <= similarity_threshold)
+
+    if triggered:
+        scores_arr = np.array([c["score"] for c in proc_cands], dtype=np.float32)
+        selected_sub_indices = run_mmr_selection(proc_cands, scores_arr, lam=mmr_lambda, k_select=k_compact)
+    else:
+        selected_sub_indices = list(range(n_top))
+
+    # Format the selected candidates cleanly
+    compact_cands = []
+    for rank_pos, sub_idx in enumerate(selected_sub_indices, 1):
+        raw_c = proc_cands[sub_idx]
+        unit_price = float(raw_c.get("target_unit_price", 0.0))
+        cand_dict = {
+            "candidate_rank": rank_pos,
+            "candidate_score": round(float(raw_c["score"]), 6),
+            "candidate_unit_price": unit_price,
+            "candidate_description": str(raw_c.get("COMMODITY_DESCRIPTION") or raw_c.get("product_text_normalized") or ""),
+            "row_id": int(raw_c.get("row_id", -1)),
+            "purchase_order": str(raw_c.get("PURCHASE_ORDER") or ""),
+            "commodity_code": str(raw_c.get("COMMODITY") or raw_c.get("commodity_code") or ""),
+            "unit_of_measure": str(raw_c.get("UNIT_OF_MEASURE") or "EA"),
+            "award_date": str(raw_c.get("award_date_parsed") or ""),
+            "retrieval_channels": list(raw_c.get("retrieval_channels", [])),
+            "stratified_identity": raw_c.get("strat_key", ""),
+        }
+        compact_cands.append(cand_dict)
+
+    return compact_cands, triggered, round(max_pairwise_sim, 4)
+
+
+# --------------------------------------------------------------------------- #
 #  Main predictor class                                                        #
 # --------------------------------------------------------------------------- #
 class ProcurementPredictor:
@@ -485,6 +648,9 @@ class ProcurementPredictor:
                 "reliability": "LOW",
                 "predicted_unit_price": None,
                 "rank1_candidate": None,
+                "compact_top10_candidates": [],
+                "selective_mmr_triggered": False,
+                "max_pairwise_similarity": 0.0,
                 "n_candidates": 0,
                 "candidate_prices": [],
                 "retrieval_time_s": retrieval_time,
@@ -609,6 +775,16 @@ class ProcurementPredictor:
             q_date=q_date,
         )
 
+        # Select compact Top-10 candidates via frozen Selective MMR policy
+        compact_top10, selective_mmr_triggered, max_pairwise_sim = select_compact_top10(
+            candidates=candidates,
+            scores=scores,
+            similarity_threshold=0.98,
+            mmr_lambda=0.6,
+            k_compact=10,
+            top_n_pool=30,
+        )
+
         return {
             "benchmarkUnitPrice": predicted_price,
             "expectedRange": expected_range,
@@ -617,6 +793,9 @@ class ProcurementPredictor:
             "reliability": reliability,
             "predicted_unit_price": predicted_price,  # Backwards compatibility alias
             "rank1_candidate": rank1_cand,
+            "compact_top10_candidates": compact_top10,
+            "selective_mmr_triggered": selective_mmr_triggered,
+            "max_pairwise_similarity": max_pairwise_sim,
             "n_candidates": len(candidates),
             "candidate_prices": sorted_prices,
             "rank1_score": float(scores[rank1_idx]),
@@ -674,6 +853,11 @@ def _run_smoke_test(predictor: ProcurementPredictor):
     print(f"  Reliability:           {result.get('reliability', 'N/A')}")
     print(f"  Candidates retrieved:  {result['n_candidates']}")
     print(f"  Top-5 candidate prices:{[f'${p:,.2f}' for p in result['candidate_prices'][:5]]}")
+    print(f"  Selective MMR fired:   {result.get('selective_mmr_triggered')} (Max pair sim: {result.get('max_pairwise_similarity')})")
+    print(f"  Compact Top-10 count:  {len(result.get('compact_top10_candidates', []))}")
+    if result.get("compact_top10_candidates"):
+        top_prices_fmt = [f"${c['candidate_unit_price']:,.2f}" for c in result['compact_top10_candidates'][:5]]
+        print(f"  Compact Top-10 prices: {top_prices_fmt}...")
     print(f"  Selected candidate:    Row #{result['rank1_candidate'].get('row_id')}: {result['rank1_candidate'].get('COMMODITY_DESCRIPTION', '')[:60]}...")
     print(f"  Retrieval time:        {result['retrieval_time_s']}s")
     print(f"  Feature time:          {result['feature_time_s']}s")

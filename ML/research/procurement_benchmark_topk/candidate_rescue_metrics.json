@@ -1,0 +1,103 @@
+{
+  "experiment_name": "candidate_rescue_ranks_31_60_cv",
+  "population": 10560,
+  "runtime_seconds": 94.08,
+  "fold_results": {
+    "fold_1": {
+      "training_rule_selected": {
+        "threshold": 0.7,
+        "rescue_triggers": 2401,
+        "pct_triggers": 45.47,
+        "rescues_successful": 51,
+        "rescues_harmful": 27,
+        "rescues_neutral": 2323,
+        "training_accuracy_10pct": 64.51,
+        "net_gain_vs_sel_mmr": 24
+      },
+      "held_out_evaluation_on_fold_2": {
+        "baseline_hits": 3264,
+        "selective_mmr_hits": 3319,
+        "candidate_rescue_hits": 3312,
+        "net_gain_vs_baseline": 48,
+        "net_gain_vs_selective_mmr": -7,
+        "rescues_activated": 2422,
+        "successful_rescues": 45,
+        "harmful_rescues": 52
+      }
+    },
+    "fold_2": {
+      "training_rule_selected": {
+        "threshold": 0.4,
+        "rescue_triggers": 4140,
+        "pct_triggers": 78.41,
+        "rescues_successful": 75,
+        "rescues_harmful": 75,
+        "rescues_neutral": 3990,
+        "training_accuracy_10pct": 62.86,
+        "net_gain_vs_sel_mmr": 0
+      },
+      "held_out_evaluation_on_fold_1": {
+        "baseline_hits": 3351,
+        "selective_mmr_hits": 3382,
+        "candidate_rescue_hits": 3399,
+        "net_gain_vs_baseline": 48,
+        "net_gain_vs_selective_mmr": 17,
+        "rescues_activated": 4072,
+        "successful_rescues": 81,
+        "harmful_rescues": 64
+      }
+    }
+  },
+  "combined_comparison": {
+    "system_a_canonical_top10": {
+      "name": "Canonical Top-10 Baseline",
+      "top10_accuracy_10pct": 62.64,
+      "hits_count": 6615,
+      "top5_coverage_10pct": 54.14,
+      "rank1_accuracy_10pct": 37.57,
+      "accuracy_5pct": 53.29,
+      "accuracy_20pct": 74.29,
+      "r1_mean_ape": 1206.51,
+      "r1_median_ape": 26.95
+    },
+    "system_b_selective_mmr": {
+      "name": "Selective MMR Top-10",
+      "top10_accuracy_10pct": 63.46,
+      "hits_count": 6701,
+      "top5_coverage_10pct": 54.38,
+      "rank1_accuracy_10pct": 37.57,
+      "accuracy_5pct": 53.71,
+      "accuracy_20pct": 74.73,
+      "r1_mean_ape": 1206.51,
+      "r1_median_ape": 26.95,
+      "improved_queries_vs_base": 209,
+      "degraded_queries_vs_base": 123,
+      "unchanged_queries_vs_base": 10228,
+      "net_gain_vs_base": 86
+    },
+    "system_c_candidate_rescue": {
+      "name": "Candidate Rescue + Selective MMR Top-10",
+      "top10_accuracy_10pct": 63.55,
+      "hits_count": 6711,
+      "top5_coverage_10pct": 54.38,
+      "rank1_accuracy_10pct": 37.57,
+      "accuracy_5pct": 53.88,
+      "accuracy_20pct": 75.19,
+      "r1_mean_ape": 1206.51,
+      "r1_median_ape": 26.95,
+      "improved_queries_vs_base": 300,
+      "degraded_queries_vs_base": 204,
+      "unchanged_queries_vs_base": 10056,
+      "net_gain_vs_base": 96,
+      "improved_queries_vs_sel_mmr": 126,
+      "degraded_queries_vs_sel_mmr": 116,
+      "unchanged_queries_vs_sel_mmr": 10318,
+      "net_gain_vs_sel_mmr": 10,
+      "total_queries_with_rescue_activated": 6494,
+      "pct_queries_with_rescue_activated": 61.5,
+      "successful_rescues": 126,
+      "harmful_rescues": 116,
+      "neutral_rescues": 6252
+    }
+  }
+}

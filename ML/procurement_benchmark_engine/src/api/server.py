@@ -164,6 +164,32 @@ def predict_benchmark(request: ProcurementQueryRequest):
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
     if result.get("error"):
+        if result.get("n_candidates", 0) == 0:
+            return {
+                "currency": "INR",
+                "exchangeRate": get_usd_to_inr_rate(),
+                "benchmarkUnitPrice": None,
+                "expectedRange": None,
+                "lowerBound": None,
+                "upperBound": None,
+                "reliability": "LOW",
+                "rawUSD": {
+                    "benchmarkUnitPrice": None,
+                    "lowerBound": None,
+                    "upperBound": None,
+                },
+                "compact_top10_candidates": [],
+                "selective_mmr_triggered": False,
+                "max_pairwise_similarity": 0.0,
+                "n_candidates": 0,
+                "rank1_score": None,
+                "retrieval_time_s": result.get("retrieval_time_s", 0.0),
+                "feature_time_s": 0.0,
+                "ranking_time_s": 0.0,
+                "total_time_s": result.get("total_time_s", 0.0),
+                "inference_time_s": result.get("total_time_s", 0.0),
+                "message": "No matching historical procurement candidates found in catalog.",
+            }
         raise HTTPException(status_code=500, detail=result["error"])
 
     # ----------------------------------------------------------------------- #
@@ -195,6 +221,16 @@ def predict_benchmark(request: ProcurementQueryRequest):
         "upperBound": usd_upper,
     }
 
+    # Format compact Top-10 candidates (with both USD and INR presentations)
+    compact_cands = result.get("compact_top10_candidates") or []
+    compact_cands_presentation = []
+    for c in compact_cands:
+        c_dict = dict(c)
+        usd_p = float(c_dict.get("candidate_unit_price", 0.0))
+        c_dict["candidate_unit_price_usd"] = usd_p
+        c_dict["candidate_unit_price_inr"] = round(float(usd_p * rate), 2)
+        compact_cands_presentation.append(c_dict)
+
     return {
         "currency": "INR",
         "exchangeRate": rate,
@@ -204,6 +240,9 @@ def predict_benchmark(request: ProcurementQueryRequest):
         "upperBound": inr_upper,
         "reliability": result.get("reliability"),
         "rawUSD": raw_usd,
+        "compact_top10_candidates": compact_cands_presentation,
+        "selective_mmr_triggered": result.get("selective_mmr_triggered"),
+        "max_pairwise_similarity": result.get("max_pairwise_similarity"),
         "n_candidates": result.get("n_candidates"),
         "rank1_score": result.get("rank1_score"),
         "retrieval_time_s": result.get("retrieval_time_s"),

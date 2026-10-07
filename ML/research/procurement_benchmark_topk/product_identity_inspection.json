@@ -1,0 +1,254 @@
+{
+  "total_validation_queries": 10560,
+  "total_top30_candidates_evaluated": 316784,
+  "mean_candidates_per_query_in_top30": 30.0,
+  "catalog_field_stats": {
+    "product_identity_key": {
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 36898
+    },
+    "product_identity_confidence": {
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 3
+    },
+    "commodity_code": {
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 9561
+    },
+    "commodity_family": {
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 20
+    },
+    "brand": {
+      "null_count": 192856,
+      "null_pct": 92.02,
+      "unique_count": 93
+    },
+    "model": {
+      "null_count": 144215,
+      "null_pct": 68.811,
+      "unique_count": 19703
+    },
+    "product_text_normalized": {
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 95112
+    },
+    "COMMODITY_DESCRIPTION": {
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 9788
+    },
+    "EXTENDED_DESCRIPTION": {
+      "null_count": 38921,
+      "null_pct": 18.571,
+      "unique_count": 78335
+    }
+  },
+  "unique_counts_in_top30": {
+    "unique_product_identity_keys": 16041,
+    "unique_identity_keys": 17385,
+    "unique_normalized_product_names": 2532,
+    "unique_commodity_codes": 3877,
+    "unique_brand_models": 10157
+  },
+  "missingness_in_top30": {
+    "missing_product_identity_key_count": 0,
+    "missing_product_identity_key_pct": 0.0,
+    "generic_product_identity_key_count": 274035,
+    "generic_product_identity_key_pct": 86.51
+  },
+  "candidate_level_redundancy_in_top30": {
+    "redundant_candidates_by_product_identity_key": 199529,
+    "redundant_candidates_by_identity_key": 197438,
+    "redundant_candidates_by_normalized_name": 283973,
+    "redundant_candidates_by_commodity_code": 280665,
+    "redundant_candidates_by_brand_model": 51236
+  },
+  "query_level_repetition_rates_in_top30": {
+    "product_identity_key": {
+      "queries_with_ge2_same": 10459,
+      "queries_with_ge2_pct": 99.04,
+      "queries_with_ge3_same": 10184,
+      "queries_with_ge3_pct": 96.44,
+      "queries_with_ge5_same": 9233,
+      "queries_with_ge5_pct": 87.43,
+      "queries_with_ge10_same": 6940,
+      "queries_with_ge10_pct": 65.72
+    },
+    "identity_key": {
+      "queries_with_ge2_same": 10519,
+      "queries_with_ge2_pct": 99.61,
+      "queries_with_ge3_same": 10203,
+      "queries_with_ge3_pct": 96.62,
+      "queries_with_ge5_same": 9144,
+      "queries_with_ge5_pct": 86.59
+    },
+    "normalized_product_name": {
+      "queries_with_ge2_same": 10560,
+      "queries_with_ge2_pct": 100.0,
+      "queries_with_ge3_same": 10553,
+      "queries_with_ge3_pct": 99.93,
+      "queries_with_ge5_same": 10445,
+      "queries_with_ge5_pct": 98.91
+    },
+    "commodity_code": {
+      "queries_with_ge2_same": 10560,
+      "queries_with_ge2_pct": 100.0,
+      "queries_with_ge3_same": 10554,
+      "queries_with_ge3_pct": 99.94,
+      "queries_with_ge5_same": 10412,
+      "queries_with_ge5_pct": 98.6
+    },
+    "brand_model": {
+      "queries_with_ge2_same": 6183,
+      "queries_with_ge2_pct": 58.55,
+      "queries_with_ge3_same": 4162,
+      "queries_with_ge3_pct": 39.41,
+      "queries_with_ge5_same": 2510,
+      "queries_with_ge5_pct": 23.77
+    }
+  },
+  "repetition_examples": [
+    {
+      "query_index": 0,
+      "repeated_product_identity_key": "49362|GENERIC|OTHER_GOODS|EA",
+      "repetition_count": 20,
+      "sample_candidates": [
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          22.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          2724.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          312.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          65.0
+        ]
+      ]
+    },
+    {
+      "query_index": 1,
+      "repeated_product_identity_key": "49362|GENERIC|OTHER_GOODS|EA",
+      "repetition_count": 17,
+      "sample_candidates": [
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          2724.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          312.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          65.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          22.0
+        ]
+      ]
+    },
+    {
+      "query_index": 2,
+      "repeated_product_identity_key": "49362|GENERIC|OTHER_GOODS|EA",
+      "repetition_count": 17,
+      "sample_candidates": [
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          2724.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          312.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          65.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          22.0
+        ]
+      ]
+    },
+    {
+      "query_index": 3,
+      "repeated_product_identity_key": "49362|GENERIC|OTHER_GOODS|EA",
+      "repetition_count": 19,
+      "sample_candidates": [
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          22.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          2724.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          312.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "PO220018091103178",
+          3970.0
+        ]
+      ]
+    },
+    {
+      "query_index": 4,
+      "repeated_product_identity_key": "49362|GENERIC|OTHER_GOODS|EA",
+      "repetition_count": 15,
+      "sample_candidates": [
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          22.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          312.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          2724.0
+        ],
+        [
+          "Sample Collecting, Diluting and Multiple Dispensin",
+          "CT2200AW200512060",
+          65.0
+        ]
+      ]
+    }
+  ],
+  "runtime_seconds": 141.35
+}
