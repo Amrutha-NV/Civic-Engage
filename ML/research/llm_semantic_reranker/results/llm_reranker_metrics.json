@@ -1,0 +1,93 @@
+{
+  "experiment": "llm_reranker",
+  "dataset_path": "E:\\MajorProject\\CivicEngage-final\\ML\\research\\procurement_benchmark_topk\\frozen_evaluation_dataset.parquet",
+  "query_count": 5,
+  "model": "apodex/apodex-1.1-mini:free",
+  "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+  "device": "api",
+  "selection_inputs": [
+    "target_description",
+    "target_quantity",
+    "target_unit_of_measure",
+    "target_procurement_date",
+    "target_city",
+    "target_state",
+    "target_brand",
+    "target_model",
+    "target_commodity_code",
+    "target_commodity_family",
+    "candidate_rank",
+    "candidate_description",
+    "candidate_score"
+  ],
+  "excluded_from_llm_selection": [
+    "candidate_unit_price",
+    "actual_unit_price",
+    "absolute_percentage_error",
+    "is_within_10pct"
+  ],
+  "decision_contract": {
+    "accepted_decision": "HISTORICAL_ACCEPTED",
+    "rejection_decision": "HISTORICAL_INSUFFICIENT",
+    "allowed_candidate_ranks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "price_visible_to_llm": false,
+    "generated_prices_allowed": false
+  },
+  "evaluation": {
+    "baseline": {
+      "accuracy_at_5pct": {
+        "hits": 0,
+        "total": 5,
+        "percentage": 0.0
+      },
+      "accuracy_at_10pct": {
+        "hits": 0,
+        "total": 5,
+        "percentage": 0.0
+      },
+      "accuracy_at_20pct": {
+        "hits": 0,
+        "total": 5,
+        "percentage": 0.0
+      },
+      "mae": 1420.52,
+      "mdape": 98.675178,
+      "mean_ape": 780.89931
+    },
+    "llm_reranker": {
+      "selection_metrics": null,
+      "evaluated_queries": 0,
+      "rejected_queries": 5,
+      "rejection_rate_percent": 100.0,
+      "accepted_accuracy_at_10_hits": 0,
+      "end_to_end_accuracy_at_10pct": 0.0
+    },
+    "selected_rank_distribution": {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0
+    },
+    "rank_changes_from_baseline": 0,
+    "rank_1_retention": 0
+  },
+  "execution_utc": "2026-10-04T09:34:15.810569+00:00",
+  "runtime_seconds": 5.798
+}

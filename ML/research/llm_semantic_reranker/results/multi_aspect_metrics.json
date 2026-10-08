@@ -1,0 +1,105 @@
+{
+  "experiment": "multi_aspect_historical_price_reranker",
+  "dataset_path": "E:\\MajorProject\\CivicEngage-final\\ML\\research\\procurement_benchmark_topk\\frozen_evaluation_dataset.parquet",
+  "dataset_rows": 105600,
+  "query_count": 10560,
+  "candidates_per_query": 10,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "device": "cpu",
+  "batch_size": 16,
+  "unique_descriptions_encoded": 19551,
+  "weights": {
+    "semantic": 0.4,
+    "attribute": 0.15,
+    "historical_price_consensus": 0.3,
+    "original_retrieval": 0.15
+  },
+  "selection_inputs": [
+    "target_description",
+    "candidate_description",
+    "target_brand",
+    "target_model",
+    "target_commodity_code",
+    "candidate_unit_price",
+    "candidate_score",
+    "candidate_rank",
+    "Top-10 candidate price distribution"
+  ],
+  "evaluation_only_fields": [
+    "actual_unit_price",
+    "absolute_percentage_error",
+    "is_within_10pct"
+  ],
+  "price_features": [
+    "price_support_5",
+    "price_support_10",
+    "price_support_20",
+    "price_distance_from_median",
+    "median_proximity_score",
+    "price_consensus_score"
+  ],
+  "selection_rule": "highest multi_aspect_score",
+  "tie_break_rule": "lowest candidate_rank only after equal multi_aspect score",
+  "baseline": {
+    "accuracy_at_5pct": {
+      "hits": 3330,
+      "total": 10560,
+      "percentage": 31.534091
+    },
+    "accuracy_at_10pct": {
+      "hits": 3967,
+      "total": 10560,
+      "percentage": 37.566288
+    },
+    "accuracy_at_20pct": {
+      "hits": 4823,
+      "total": 10560,
+      "percentage": 45.672348
+    },
+    "mae": 6729.162123,
+    "mdape": 26.948608,
+    "mean_ape": 1206.514905
+  },
+  "multi_aspect_reranker": {
+    "accuracy_at_5pct": {
+      "hits": 3358,
+      "total": 10560,
+      "percentage": 31.799242
+    },
+    "accuracy_at_10pct": {
+      "hits": 4032,
+      "total": 10560,
+      "percentage": 38.181818
+    },
+    "accuracy_at_20pct": {
+      "hits": 4928,
+      "total": 10560,
+      "percentage": 46.666667
+    },
+    "mae": 6013.672533,
+    "mdape": 24.729892,
+    "mean_ape": 944.087244
+  },
+  "selected_rank_distribution": {
+    "1": 6303,
+    "2": 1575,
+    "3": 810,
+    "4": 572,
+    "5": 350,
+    "6": 272,
+    "7": 219,
+    "8": 174,
+    "9": 164,
+    "10": 121
+  },
+  "rank_changes_from_baseline": 4257,
+  "comparison_with_rank_1_at_10pct": {
+    "recovered_queries": 533,
+    "damaged_queries": 468,
+    "unchanged_correct": 3499,
+    "unchanged_wrong": 6060,
+    "net_recovery": 65
+  },
+  "execution_utc": "2026-10-06T08:07:38.861725+00:00",
+  "runtime_seconds": 773.228
+}

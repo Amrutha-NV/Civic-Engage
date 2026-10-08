@@ -1,0 +1,91 @@
+{
+  "experiment": "structured_attribute_reranker",
+  "dataset_path": "E:\\MajorProject\\CivicEngage-final\\ML\\research\\procurement_benchmark_topk\\frozen_evaluation_dataset.parquet",
+  "query_count": 10560,
+  "selection_inputs": [
+    "target_brand",
+    "target_model",
+    "target_commodity_code",
+    "candidate_description"
+  ],
+  "excluded_unavailable_candidate_attributes": [
+    "quantity",
+    "unit_of_measure",
+    "award_date",
+    "vendor",
+    "location",
+    "commodity_family"
+  ],
+  "excluded_from_selection": [
+    "candidate_unit_price",
+    "candidate_score",
+    "actual_unit_price",
+    "absolute_percentage_error",
+    "is_within_10pct"
+  ],
+  "weights": {
+    "brand_literal_match": 0.25,
+    "model_literal_match": 0.65,
+    "commodity_code_literal_match": 0.1
+  },
+  "tie_break_rule": "lowest candidate_rank after equal attribute score",
+  "match_counts": {
+    "brand_match": 8315,
+    "model_match": 11875,
+    "commodity_code_match": 37
+  },
+  "baseline": {
+    "accuracy_at_5pct": {
+      "hits": 3330,
+      "total": 10560,
+      "percentage": 31.534091
+    },
+    "accuracy_at_10pct": {
+      "hits": 3967,
+      "total": 10560,
+      "percentage": 37.566288
+    },
+    "accuracy_at_20pct": {
+      "hits": 4823,
+      "total": 10560,
+      "percentage": 45.672348
+    },
+    "mae": 6729.162123,
+    "mdape": 26.948608,
+    "mean_ape": 1206.514905
+  },
+  "structured_reranker": {
+    "accuracy_at_5pct": {
+      "hits": 3341,
+      "total": 10560,
+      "percentage": 31.638258
+    },
+    "accuracy_at_10pct": {
+      "hits": 3985,
+      "total": 10560,
+      "percentage": 37.736742
+    },
+    "accuracy_at_20pct": {
+      "hits": 4851,
+      "total": 10560,
+      "percentage": 45.9375
+    },
+    "mae": 6694.712774,
+    "mdape": 26.143915,
+    "mean_ape": 1197.659942
+  },
+  "selected_rank_distribution": {
+    "1": 10218,
+    "2": 147,
+    "3": 73,
+    "4": 37,
+    "5": 19,
+    "6": 22,
+    "7": 16,
+    "8": 13,
+    "9": 11,
+    "10": 4
+  },
+  "execution_utc": "2026-10-01T17:25:11.587505+00:00",
+  "runtime_seconds": 7.812
+}

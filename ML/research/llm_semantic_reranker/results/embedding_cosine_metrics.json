@@ -1,0 +1,78 @@
+{
+  "experiment": "embedding_cosine_reranker",
+  "dataset_path": "E:\\MajorProject\\CivicEngage-final\\ML\\research\\procurement_benchmark_topk\\frozen_evaluation_dataset.parquet",
+  "dataset_rows": 105600,
+  "query_count": 10560,
+  "candidates_per_query": 10,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "device": "cpu",
+  "batch_size": 16,
+  "unique_descriptions_encoded": 19551,
+  "selection_inputs": [
+    "target_description",
+    "candidate_description"
+  ],
+  "excluded_from_selection": [
+    "candidate_unit_price",
+    "candidate_score",
+    "candidate_rank",
+    "actual_unit_price",
+    "absolute_percentage_error",
+    "is_within_10pct"
+  ],
+  "tie_break_rule": "lowest candidate_rank after equal cosine similarity",
+  "baseline": {
+    "accuracy_at_5pct": {
+      "hits": 3330,
+      "total": 10560,
+      "percentage": 31.534091
+    },
+    "accuracy_at_10pct": {
+      "hits": 3967,
+      "total": 10560,
+      "percentage": 37.566288
+    },
+    "accuracy_at_20pct": {
+      "hits": 4823,
+      "total": 10560,
+      "percentage": 45.672348
+    },
+    "mae": 6729.162123,
+    "mdape": 26.948608,
+    "mean_ape": 1206.514905
+  },
+  "cosine_reranker": {
+    "accuracy_at_5pct": {
+      "hits": 3421,
+      "total": 10560,
+      "percentage": 32.395833
+    },
+    "accuracy_at_10pct": {
+      "hits": 4077,
+      "total": 10560,
+      "percentage": 38.607955
+    },
+    "accuracy_at_20pct": {
+      "hits": 4965,
+      "total": 10560,
+      "percentage": 47.017045
+    },
+    "mae": 6202.299592,
+    "mdape": 24.189848,
+    "mean_ape": 1057.520591
+  },
+  "selected_rank_distribution": {
+    "1": 5247,
+    "2": 1245,
+    "3": 754,
+    "4": 668,
+    "5": 530,
+    "6": 460,
+    "7": 450,
+    "8": 394,
+    "9": 401,
+    "10": 411
+  },
+  "execution_utc": "2026-10-01T17:10:25.086997+00:00",
+  "runtime_seconds": 759.759
+}

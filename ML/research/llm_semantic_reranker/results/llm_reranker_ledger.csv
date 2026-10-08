@@ -1,0 +1,6 @@
+query_index,llm_decision,selected_candidate_rank,selected_unit_price,baseline_rank,baseline_unit_price,actual_unit_price,reason,validation_status,baseline_absolute_percentage_error,llm_absolute_percentage_error,is_llm_within_10pct
+0,HISTORICAL_INSUFFICIENT,,,1,22.0,138.08,LLM/evaluation error: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions,ERROR,84.06720741599074,,
+1,HISTORICAL_INSUFFICIENT,,,1,2724.0,138.08,LLM/evaluation error: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions,ERROR,1872.7694090382386,,
+2,HISTORICAL_INSUFFICIENT,,,1,2724.0,146.48,LLM/evaluation error: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions,ERROR,1759.6395412342981,,
+3,HISTORICAL_INSUFFICIENT,,,1,22.0,206.48,LLM/evaluation error: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions,ERROR,89.34521503293297,,
+4,HISTORICAL_INSUFFICIENT,,,1,22.0,1660.6,LLM/evaluation error: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions,ERROR,98.67517764663376,,

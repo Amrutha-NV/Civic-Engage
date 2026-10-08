@@ -1,0 +1,76 @@
+{
+  "experiment": "cross_encoder_reranker",
+  "dataset_path": "E:\\MajorProject\\CivicEngage-final\\ML\\research\\procurement_benchmark_topk\\frozen_evaluation_dataset.parquet",
+  "query_count": 10560,
+  "candidates_per_query": 10,
+  "cross_encoder_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+  "device": "cpu",
+  "batch_size": 16,
+  "selection_inputs": [
+    "target_description",
+    "candidate_description"
+  ],
+  "excluded_from_selection": [
+    "candidate_unit_price",
+    "candidate_score",
+    "candidate_rank",
+    "actual_unit_price",
+    "absolute_percentage_error",
+    "is_within_10pct"
+  ],
+  "tie_break_rule": "lowest candidate_rank after equal cross-encoder score",
+  "baseline": {
+    "accuracy_at_5pct": {
+      "hits": 3330,
+      "total": 10560,
+      "percentage": 31.534091
+    },
+    "accuracy_at_10pct": {
+      "hits": 3967,
+      "total": 10560,
+      "percentage": 37.566288
+    },
+    "accuracy_at_20pct": {
+      "hits": 4823,
+      "total": 10560,
+      "percentage": 45.672348
+    },
+    "mae": 6729.162123,
+    "mdape": 26.948608,
+    "mean_ape": 1206.514905
+  },
+  "cross_encoder_reranker": {
+    "accuracy_at_5pct": {
+      "hits": 3326,
+      "total": 10560,
+      "percentage": 31.496212
+    },
+    "accuracy_at_10pct": {
+      "hits": 3950,
+      "total": 10560,
+      "percentage": 37.405303
+    },
+    "accuracy_at_20pct": {
+      "hits": 4885,
+      "total": 10560,
+      "percentage": 46.25947
+    },
+    "mae": 6415.981662,
+    "mdape": 25.272727,
+    "mean_ape": 1867.26882
+  },
+  "selected_rank_distribution": {
+    "1": 4430,
+    "2": 1219,
+    "3": 856,
+    "4": 714,
+    "5": 650,
+    "6": 608,
+    "7": 548,
+    "8": 545,
+    "9": 503,
+    "10": 487
+  },
+  "execution_utc": "2026-10-01T19:25:25.299191+00:00",
+  "runtime_seconds": 5873.381
+}

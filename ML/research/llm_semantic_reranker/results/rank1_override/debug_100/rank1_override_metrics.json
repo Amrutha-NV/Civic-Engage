@@ -1,0 +1,48 @@
+{
+  "experiment": "Experiment 6 - Conservative Rank-1 Override",
+  "dataset_queries": 100,
+  "baseline_accuracy_at_5pct": 45.0,
+  "override_accuracy_at_5pct": 44.0,
+  "baseline_accuracy_at_10pct": 51.0,
+  "override_accuracy_at_10pct": 50.0,
+  "baseline_accuracy_at_20pct": 56.00000000000001,
+  "override_accuracy_at_20pct": 55.00000000000001,
+  "accuracy_change_at_10pct_pp": -1.0,
+  "recovered": 0,
+  "damaged": 1,
+  "both_correct": 50,
+  "both_wrong": 49,
+  "net_recovery": -1,
+  "override_count": 5,
+  "override_rate_pct": 5.0,
+  "rank1_preservation_rate_pct": 95.0,
+  "baseline_mae": 931.8637999999999,
+  "override_mae": 935.2094000000001,
+  "baseline_mdape": 9.091129076610017,
+  "override_mdape": 10.1046807423356,
+  "baseline_mean_ape": 334.940712385714,
+  "override_mean_ape": 335.2671805939572,
+  "selected_rank_distribution": {
+    "1": 95,
+    "2": 2,
+    "3": 1,
+    "6": 2
+  },
+  "decision_breakdown": {
+    "KEEP_RANK_1": 95,
+    "OVERRIDE": 5
+  },
+  "configuration": {
+    "debug_mode": true,
+    "debug_n_queries": 100,
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "batch_size": 16,
+    "override_margin": 0.08,
+    "min_alternative_evidence": 0.55,
+    "strong_rank1_identity": 0.75,
+    "strong_rank1_extra_margin": 0.1,
+    "candidate_selection_uses_actual_price": false,
+    "candidate_selection_uses_ape": false,
+    "candidate_selection_uses_success_label": false
+  }
+}
