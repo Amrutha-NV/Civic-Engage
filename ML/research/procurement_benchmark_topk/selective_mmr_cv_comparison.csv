@@ -1,0 +1,4 @@
+name,top10_accuracy_10pct,hits_count,top5_coverage_10pct,rank1_accuracy_10pct,accuracy_5pct,accuracy_20pct,r1_mean_ape,r1_median_ape,pct_using_mmr,pct_retaining_baseline,improved_queries,degraded_queries,unchanged_queries,net_improvement,net_improvement_vs_baseline,net_improvement_vs_global_mmr,queries_using_mmr,queries_retaining_baseline
+Canonical Top-10 Baseline,62.64,6615,54.14,37.57,53.29,74.29,1206.51,26.95,0.0,100.0,,,,,,,,
+Global MMR lambda=0.6,63.12,6666,53.99,37.57,53.22,74.59,1206.51,26.95,100.0,0.0,332.0,281.0,9947.0,51.0,,,,
+Cross-Validated Selective MMR,63.46,6701,54.38,37.57,53.71,74.73,1206.51,26.95,68.01,31.99,209.0,123.0,10228.0,,86.0,35.0,7182.0,3378.0

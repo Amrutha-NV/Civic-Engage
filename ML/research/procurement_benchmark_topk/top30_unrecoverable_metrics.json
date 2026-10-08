@@ -1,0 +1,127 @@
+{
+  "total_validation_queries": 10560,
+  "runtime_seconds": 57.51,
+  "group_summary": {
+    "group_a_top10_valid_count": 6615,
+    "group_a_top10_valid_pct": 62.64,
+    "group_b_ranks_11_30_valid_count": 1652,
+    "group_b_ranks_11_30_valid_pct": 15.64,
+    "group_c_top30_unrecoverable_count": 2293,
+    "group_c_top30_unrecoverable_pct": 21.71,
+    "subgroup_c1_ranks_31_60_valid_count": 719,
+    "subgroup_c1_ranks_31_60_valid_pct": 6.81,
+    "subgroup_c2_top60_unrecoverable_count": 1574,
+    "subgroup_c2_top60_unrecoverable_pct": 14.91
+  },
+  "canonical_oracle_benchmarks": {
+    "top10_valid": 6615,
+    "top10_pct": 62.64,
+    "top30_valid": 8267,
+    "top30_pct": 78.29,
+    "top60_valid": 8986,
+    "top60_pct": 85.09,
+    "top60_unrecoverable": 1574,
+    "top60_unrecoverable_pct": 14.91
+  },
+  "subgroup_c1_deep_dive": {
+    "total_queries": 719,
+    "rank_distribution": {
+      "ranks_31_40": 380,
+      "ranks_31_40_pct": 52.85,
+      "ranks_41_50": 207,
+      "ranks_41_50_pct": 28.79,
+      "ranks_51_60": 132,
+      "ranks_51_60_pct": 18.36
+    },
+    "primary_retrieval_channels": {
+      "E_WORD_TFIDF": 223,
+      "I_COMM_UOM": 145,
+      "H_SEMANTIC_EMB": 130,
+      "F_CHAR_NGRAMS": 85,
+      "J_QUANTITY_AWARE": 58,
+      "D_NUMERIC_SPECS": 39,
+      "G_LSI_SVD": 27,
+      "C_MODEL_FAMILY": 7,
+      "B_BRAND_MODEL": 4,
+      "A_EXACT_IDENTITY": 1
+    },
+    "channel_membership_coverage": {
+      "H": 322,
+      "I": 263,
+      "G": 258,
+      "J": 243,
+      "F": 228,
+      "E": 225,
+      "D": 40,
+      "C": 7,
+      "B": 4,
+      "A": 1
+    },
+    "channel_consensus_counts": {
+      "1": 275,
+      "2": 197,
+      "3": 121,
+      "4": 85,
+      "5": 27,
+      "6": 14
+    },
+    "score_gap_vs_rank30": {
+      "mean": 0.3207,
+      "median": 0.1799,
+      "min": 0.0001,
+      "max": 2.664
+    },
+    "score_gap_vs_rank10": {
+      "mean": 0.7662,
+      "median": 0.608
+    },
+    "feature_alignment": {
+      "commodity_match_count": 550,
+      "commodity_match_pct": 76.5,
+      "uom_match_count": 708,
+      "uom_match_pct": 98.47,
+      "mean_token_jaccard": 0.4089
+    }
+  },
+  "subgroup_c2_catalog_search": {
+    "total_queries": 1574,
+    "evidence_found_in_catalog_count": 430,
+    "evidence_found_in_catalog_pct": 27.32,
+    "no_evidence_found_count": 1144,
+    "no_evidence_found_pct": 72.68,
+    "match_type_breakdown": {
+      "NO_COMMODITY_PRICE_MATCH": 1144,
+      "COMMODITY_SAME_RETRIEVAL_MISS": 335,
+      "COMMODITY_SAME_LOW_TEXT_SIM": 61,
+      "COMMODITY_SAME_QUANTITY_DISPARITY": 21,
+      "COMMODITY_SAME_UOM_DIFFERENT": 13
+    },
+    "failure_taxonomy_distribution": {
+      "HISTORICAL_DATA_COVERAGE_LIMITATION": {
+        "count": 1144,
+        "pct_of_c2": 72.68,
+        "pct_of_total_population": 10.83
+      },
+      "RETRIEVAL_CHANNEL_MISS": {
+        "count": 335,
+        "pct_of_c2": 21.28,
+        "pct_of_total_population": 3.17
+      },
+      "TERMINOLOGY_VARIATION": {
+        "count": 61,
+        "pct_of_c2": 3.88,
+        "pct_of_total_population": 0.58
+      },
+      "QUANTITY_CONTEXT_FAILURE": {
+        "count": 21,
+        "pct_of_c2": 1.33,
+        "pct_of_total_population": 0.2
+      },
+      "UOM_FAILURE": {
+        "count": 13,
+        "pct_of_c2": 0.83,
+        "pct_of_total_population": 0.12
+      }
+    }
+  }
+}

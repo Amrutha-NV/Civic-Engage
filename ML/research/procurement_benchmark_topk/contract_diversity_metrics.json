@@ -1,0 +1,36 @@
+{
+  "experiment_name": "contract_diversity_top30_max2_po",
+  "total_queries": 10560,
+  "runtime_seconds": 195.78,
+  "constraint": "maximum_2_candidates_per_purchase_order",
+  "search_pool_depth": 30,
+  "final_output_depth": 10,
+  "primary_metric": "Oracle_Accuracy_10pct",
+  "comparison": {
+    "baseline_top10_oracle_coverage_10pct": 62.64,
+    "diversity_top10_oracle_coverage_10pct": 62.44,
+    "absolute_improvement_pp": -0.2,
+    "relative_improvement_pct": -0.32,
+    "baseline_top5_coverage_10pct": 54.14,
+    "diversity_top5_coverage_10pct": 54.07,
+    "baseline_r1_accuracy_10pct": 37.57,
+    "diversity_r1_accuracy_10pct": 37.57,
+    "baseline_accuracy_5pct": 53.29,
+    "diversity_accuracy_5pct": 52.84,
+    "baseline_accuracy_20pct": 74.29,
+    "diversity_accuracy_20pct": 74.1,
+    "baseline_r1_mean_ape": 1206.51,
+    "baseline_r1_median_ape": 26.95,
+    "diversity_r1_mean_ape": 1206.51,
+    "diversity_r1_median_ape": 26.95
+  },
+  "query_transitions": {
+    "improved_queries_count": 124,
+    "improved_queries_pct": 1.17,
+    "degraded_queries_count": 145,
+    "degraded_queries_pct": 1.37,
+    "unchanged_queries_count": 10291,
+    "unchanged_queries_pct": 97.45,
+    "net_queries_gained": -21
+  }
+}
