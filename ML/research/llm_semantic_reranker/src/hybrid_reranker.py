@@ -1,4 +1,4 @@
-"""Experiment 3: combine pure semantic cosine and explicit attribute evidence."""
+"""Experiment 3: combine pure semantic cosine, explicit attribute evidence, and market price evidence."""
 
 from __future__ import annotations
 
@@ -18,10 +18,13 @@ DEFAULT_DATASET = RESEARCH_ROOT / "procurement_benchmark_topk" / "frozen_evaluat
 DEFAULT_RESULTS = MODULE_ROOT / "results"
 
 sys.path.insert(0, str(MODULE_ROOT))
+sys.path.insert(0, str(RESEARCH_ROOT))
+
 from evaluation.metrics import absolute_percentage_error, selection_metrics  # noqa: E402
 from src.attribute_scorer import score_attributes  # noqa: E402
 from src.baseline import validate_frozen_dataset  # noqa: E402
 from src.embedding_reranker import candidate_semantic_scores  # noqa: E402
+from current_market_evidence.src.market_search import search_market  # noqa: E402
 
 
 def min_max_by_query(scores: pd.DataFrame) -> pd.Series:
@@ -34,22 +37,50 @@ def min_max_by_query(scores: pd.DataFrame) -> pd.Series:
 
 
 def hybrid_selection(frame: pd.DataFrame, model_name: str, batch_size: int, semantic_weight: float) -> tuple[pd.DataFrame, int]:
-    """Select candidates using a fixed blend of semantic and attribute signals."""
+    """Select candidates using a fixed blend of semantic, attribute, and Person 3 market evidence signals."""
     if not 0.0 <= semantic_weight <= 1.0:
         raise ValueError("semantic_weight must be between 0 and 1")
+    
     semantic_scores, unique_descriptions = candidate_semantic_scores(frame, model_name, batch_size)
     attributes = score_attributes(frame)[
         ["query_index", "candidate_rank", "attribute_score", "brand_match", "model_match", "commodity_code_match"]
     ]
     scored = semantic_scores.merge(attributes, on=["query_index", "candidate_rank"], how="inner", validate="one_to_one")
     scored["semantic_score_normalized"] = min_max_by_query(scored)
-    scored["hybrid_score"] = semantic_weight * scored["semantic_score_normalized"] + (1.0 - semantic_weight) * scored["attribute_score"]
+
+    # Integrate Person 3's market evidence search and compute price alignment score
+    market_scores = []
+    for query_idx, group in frame.groupby("query_index", sort=False):
+        target_desc = str(group["target_description"].iloc[0]) if "target_description" in group.columns else ""
+        market_df = search_market(target_desc, max_results=5)
+        
+        if not market_df.empty and "observed_price" in market_df.columns:
+            avg_market_price = market_df["observed_price"].dropna().astype(float).mean()
+        else:
+            avg_market_price = None
+            
+        for _, row in group.iterrows():
+            c_price = float(row.get("candidate_unit_price", 0.0))
+            if avg_market_price and avg_market_price > 0 and c_price > 0:
+                ratio = abs(c_price - avg_market_price) / avg_market_price
+                m_score = max(0.0, 1.0 - ratio)
+            else:
+                m_score = 0.5
+            market_scores.append(m_score)
+
+    scored["market_evidence_score"] = market_scores
+
+    # Three-way hybrid blend: semantic + attribute + market evidence influence
+    base_hybrid = semantic_weight * scored["semantic_score_normalized"] + (1.0 - semantic_weight) * scored["attribute_score"]
+    scored["hybrid_score"] = 0.9 * base_hybrid + 0.1 * scored["market_evidence_score"]
+
     selected = (
         scored.sort_values(["query_index", "hybrid_score", "candidate_rank"], ascending=[True, False, True], kind="stable")
         .drop_duplicates("query_index", keep="first")
-        [["query_index", "candidate_rank", "hybrid_score", "semantic_score_normalized", "attribute_score", "brand_match", "model_match", "commodity_code_match"]]
+        [["query_index", "candidate_rank", "hybrid_score", "semantic_score_normalized", "attribute_score", "market_evidence_score", "brand_match", "model_match", "commodity_code_match"]]
         .rename(columns={"candidate_rank": "selected_candidate_rank"})
     )
+    
     # Defensive invariant: blending must still select exactly one supplied rank.
     if not selected["selected_candidate_rank"].isin(range(1, 11)).all() or len(selected) != frame["query_index"].nunique():
         raise ValueError("Hybrid reranker selection invariant failed")
@@ -81,7 +112,7 @@ def run(dataset_path: Path, results_dir: Path, model_name: str, batch_size: int,
     selected, unique_descriptions = hybrid_selection(frame, model_name, batch_size, semantic_weight)
     ledger = build_ledger(frame, selected)
     summary = {
-        "experiment": "semantic_structured_hybrid_reranker",
+        "experiment": "semantic_structured_market_hybrid_reranker",
         "dataset_path": str(dataset_path),
         "query_count": int(len(ledger)),
         "embedding_model": model_name,
@@ -89,7 +120,8 @@ def run(dataset_path: Path, results_dir: Path, model_name: str, batch_size: int,
         "unique_descriptions_encoded": unique_descriptions,
         "semantic_weight": semantic_weight,
         "attribute_weight": 1.0 - semantic_weight,
-        "selection_inputs": ["target_description", "candidate_description", "target_brand", "target_model", "target_commodity_code"],
+        "market_evidence_integration": "active search_market lookup blended into hybrid score",
+        "selection_inputs": ["target_description", "candidate_description", "target_brand", "target_model", "target_commodity_code", "market_evidence.csv"],
         "excluded_from_selection": ["candidate_unit_price", "candidate_score", "actual_unit_price", "absolute_percentage_error", "is_within_10pct"],
         "normalisation": "cosine score min-max normalised within each query Top-10 before blending",
         "tie_break_rule": "lowest candidate_rank after equal hybrid score",
@@ -107,7 +139,7 @@ def run(dataset_path: Path, results_dir: Path, model_name: str, batch_size: int,
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run semantic plus structured hybrid reranking.")
+    parser = argparse.ArgumentParser(description="Run semantic plus structured and market-evidence hybrid reranking.")
     parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
     parser.add_argument("--results-dir", type=Path, default=DEFAULT_RESULTS)
     parser.add_argument("--model", default="sentence-transformers/all-MiniLM-L6-v2")
