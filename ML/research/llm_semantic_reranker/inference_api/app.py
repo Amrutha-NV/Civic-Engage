@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
+from fastapi.middleware.cors import CORSMiddleware
 
 from ML.research.llm_semantic_reranker.src import learned_reranker as pipeline
 from ML.research.current_market_evidence.src.market_search import search_market
@@ -32,6 +33,15 @@ K = pipeline.K
 app = FastAPI(
     title="Learned Semantic Reranker and Market Evidence API",
     version="1.1.0",
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "*"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
