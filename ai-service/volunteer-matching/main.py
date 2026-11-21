@@ -28,7 +28,14 @@ from pipeline import RecommendationPipeline
 
 app = FastAPI(title="CivicEngage AI Volunteer Matching Service")
 settings = Settings()
-service = RecommendationPipeline(settings)
+_service = None
+
+
+def get_service() -> RecommendationPipeline:
+    global _service
+    if _service is None:
+        _service = RecommendationPipeline(settings)
+    return _service
 
 
 class VolunteerMatchRequest(BaseModel):
@@ -73,7 +80,7 @@ def recommend_volunteers(request_data: VolunteerMatchRequest):
             volunteer_objs.append(Volunteer(**v))
 
         # Execute full recommendation pipeline
-        ranked_volunteers = service.recommend_from_payload(campaign_obj, volunteer_objs)
+        ranked_volunteers = get_service().recommend_from_payload(campaign_obj, volunteer_objs)
 
         return {
             "success": True,
@@ -98,6 +105,7 @@ def sync_embedding(request_data: Dict[str, Any]):
             data["_id"] = str(data["id"])
 
         volunteer = Volunteer(**data)
+        service = get_service()
         embedding = service.embedding_generator.generate_volunteer_embedding(volunteer)
         service.vector_store.upsert_volunteer_embedding(embedding)
         
@@ -116,4 +124,9 @@ def sync_embedding(request_data: Dict[str, Any]):
             "volunteer_id": str(request_data.get("id") or request_data.get("_id") or "unknown")
         }
 
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
