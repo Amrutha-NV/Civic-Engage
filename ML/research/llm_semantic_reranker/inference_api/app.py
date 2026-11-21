@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
+from fastapi.middleware.cors import CORSMiddleware
 
 from ML.research.llm_semantic_reranker.src import learned_reranker as pipeline
 
@@ -19,6 +20,16 @@ ROOT = Path(__file__).resolve().parents[4]
 DATASET = ROOT / "ML" / "research" / "procurement_benchmark_topk" / "frozen_evaluation_dataset.parquet"
 K = pipeline.K
 app = FastAPI(title="Learned Semantic Reranker API", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "*"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class Query(BaseModel):
