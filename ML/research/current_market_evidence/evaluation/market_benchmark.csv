@@ -1,0 +1,16 @@
+item_name,currency,evidence_count,min_observed_price,median_observed_price,max_observed_price,source_count,locations,evidence_quality
+Apple iPad A16 256GB,USD,1,548.6,548.6,548.6,1,USA,HIGH
+Apple iPad Mini,USD,1,599.0,599.0,599.0,1,USA,HIGH
+Apple iPad Pro 13-inch,USD,1,1499.0,1499.0,1499.0,1,USA,HIGH
+Apple iPad mini 128GB Wi-Fi,INR,1,69900.0,69900.0,69900.0,1,India,HIGH
+Cisco Catalyst C8200-1N-4T,USD,1,3309.99,3309.99,3309.99,1,USA,HIGH
+Dell 90W USB-C AC Adapter,USD,1,44.5,44.5,44.5,1,USA,HIGH
+Dell Latitude 7455,USD,1,2138.5,2138.5,2138.5,1,USA,HIGH
+Dell Performance Dock WD19DCS 210W,USD,1,268.94,268.94,268.94,1,USA,HIGH
+Dell Precision 3490,USD,1,1285.0,1285.0,1285.0,1,USA,HIGH
+Dell Pro 24 Plus Monitor P2425H,INR,1,14099.0,14099.0,14099.0,1,India,HIGH
+Dell Pro 34 Plus USB-C Hub Monitor P3425WE,USD,1,699.99,699.99,699.99,1,USA,HIGH
+Dell Pro Max 14 MC14250,USD,1,2130.16,2130.16,2130.16,1,USA,HIGH
+Dell Pro Smart Dock SD25,USD,1,299.99,299.99,299.99,1,USA,HIGH
+Dell Pro Wireless Keyboard & Mouse KM5221W,USD,1,29.0,29.0,29.0,1,USA,HIGH
+Dell UltraSharp 24 Monitor U2424H,USD,1,279.99,279.99,279.99,1,USA,HIGH

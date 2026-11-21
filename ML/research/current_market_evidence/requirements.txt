@@ -1,0 +1,4 @@
+# Person 3 Requirements
+pandas
+requests
+python-dotenv
