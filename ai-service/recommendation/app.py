@@ -17,8 +17,6 @@ load_dotenv(PROJECT_ROOT / ".env")
 load_dotenv()  # local fallback
 
 from flask import Flask, request, jsonify
-
-
 from recommender import SemanticRecommender
 from explainer import RecommendationExplainer
 
@@ -31,14 +29,19 @@ app = Flask(__name__)
 
 
 # ============================================================
-# AI COMPONENTS
+# AI COMPONENTS (LAZY-LOADED)
 # ============================================================
 
-# Semantic recommendation engine
-recommender = SemanticRecommender()
+_recommender = None
+_explainer = None
 
-# Natural-language recommendation explanation
-explainer = RecommendationExplainer()
+def get_components():
+    global _recommender, _explainer
+    if _recommender is None:
+        _recommender = SemanticRecommender()
+    if _explainer is None:
+        _explainer = RecommendationExplainer()
+    return _recommender, _explainer
 
 
 # ============================================================
@@ -87,6 +90,11 @@ def recommend():
                 "success": True,
                 "recommendations": []
             })
+
+        # ----------------------------------------------------
+        # Load AI components on first request
+        # ----------------------------------------------------
+        recommender, explainer = get_components()
 
         # ----------------------------------------------------
         # Generate semantic recommendations
@@ -140,20 +148,15 @@ def recommend():
         }), 500
 
 
-
-
 # ============================================================
 # START SERVER
 # ============================================================
 
 if __name__ == "__main__":
-    print(
-        "🚀 Starting User Event Recommender "
-        "AI service on port 5001..."
-    )
-
+    port = int(os.environ.get("PORT", 5001))
+    print(f"🚀 Starting User Event Recommender AI service on port {port}...")
     app.run(
         host="0.0.0.0",
-        port=5001,
+        port=port,
         debug=False
     )
