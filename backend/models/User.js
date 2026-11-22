@@ -54,14 +54,6 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 85,
     },
-    otp: {
-      type: String,
-      default: null,
-    },
-    otpExpires: {
-      type: Date,
-      default: null,
-    },
     role: {
       type: String,
       default: "user",
@@ -75,6 +67,14 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+  }
+);
+
+userSchema.index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { email: { $type: "string", $gt: "" } },
   }
 );
 

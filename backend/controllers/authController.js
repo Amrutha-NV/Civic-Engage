@@ -3,98 +3,10 @@ const NGO = require("../models/NGO");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-const DUMMY_OTP = "123456";
 const JWT_SECRET = process.env.JWT_SECRET || "mysecretkey123";
 
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, JWT_SECRET, { expiresIn: "30d" });
-};
-
-// @desc Send Dummy OTP for user
-// @route POST /api/auth/user/send-otp
-exports.sendUserOTP = async (req, res) => {
-  try {
-    const { phone } = req.body;
-    if (!phone) {
-      return res.status(400).json({ message: "Mobile number is required" });
-    }
-
-    const cleanPhone = phone.replace(/\D/g, "");
-    if (cleanPhone.length < 7) {
-      return res.status(400).json({ message: "Invalid mobile number format" });
-    }
-
-    let user = await User.findOne({ phone });
-    if (!user) {
-      user = new User({ phone });
-    }
-
-    user.otp = DUMMY_OTP;
-    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
-    await user.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "OTP sent successfully to mobile number.",
-      dummyOtp: DUMMY_OTP,
-      phone,
-    });
-  } catch (error) {
-    console.error("sendUserOTP Error:", error);
-    return res.status(500).json({ message: "Failed to send OTP", error: error.message });
-  }
-};
-
-const { syncVolunteerToAIService, resolveLocationCoordinates, resolveLocationCoordinatesAsync } = require("../utils/aiSync");
-
-// @desc Verify Dummy OTP for user
-exports.verifyUserOTP = async (req, res) => {
-  try {
-    const { phone, otp, name, email, skills, interests, availability, location, occupation } = req.body;
-    if (!phone || !otp) {
-      return res.status(400).json({ message: "Phone number and OTP are required" });
-    }
-
-    if (otp !== DUMMY_OTP) {
-      return res.status(400).json({ message: "Invalid OTP. Use 123456 for demo." });
-    }
-
-    let user = await User.findOne({ phone });
-    if (!user) {
-      user = new User({ phone });
-    }
-
-    if (name) user.name = name;
-    if (email) user.email = email;
-    if (skills && Array.isArray(skills)) user.skills = skills;
-    if (interests && Array.isArray(interests)) user.interests = interests;
-    if (availability) user.availability = availability;
-    if (location) user.location = location;
-    if (occupation) user.occupation = occupation;
-
-    // Resolve geographic coordinates dynamically during signup (with OpenStreetMap / India dataset)
-    user.coordinates = await resolveLocationCoordinatesAsync(user.location || location);
-    user.otp = null;
-    user.otpExpires = null;
-    user.role = "user";
-    await user.save();
-
-    // Trigger AI volunteer matching embedding sync asynchronously
-    syncVolunteerToAIService(user);
-
-
-    const token = generateToken(user._id, "user");
-
-    return res.status(200).json({
-      success: true,
-      token,
-      user,
-    });
-
-  } catch (error) {
-    console.error("verifyUserOTP Error:", error);
-    return res.status(500).json({ message: "OTP verification failed", error: error.message });
-  }
 };
 
 // @desc Register NGO

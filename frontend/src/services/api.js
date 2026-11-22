@@ -34,8 +34,10 @@ api.interceptors.response.use(
 
 // Auth Services
 export const authService = {
-  sendUserOTP: (phone) => api.post('/auth/user/send-otp', { phone }),
-  verifyUserOTP: (payload) => api.post('/auth/user/verify-otp', payload),
+  sendSignupOtp: (payload) => api.post('/auth/user/signup/send-otp', payload),
+  verifySignupOtp: (payload) => api.post('/auth/user/signup/verify-otp', payload),
+  sendLoginOtp: (email) => api.post('/auth/user/login/send-otp', { email }),
+  verifyLoginOtp: (payload) => api.post('/auth/user/login/verify-otp', payload),
   registerNGO: (payload) => api.post('/auth/ngo/register', payload),
   loginNGO: (payload) => api.post('/auth/ngo/login', payload),
   getMe: () => api.get('/auth/me'),

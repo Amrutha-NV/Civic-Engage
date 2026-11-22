@@ -58,27 +58,42 @@ npm run dev
 
 ## 🔐 Authentication APIs
 
-### 🔹 Register User
+Volunteer signup and login use email OTP. Configure Gmail credentials and `OTP_SECRET` using [EMAIL_OTP_SETUP.md](EMAIL_OTP_SETUP.md) before testing these endpoints.
 
-**POST** `/api/auth/register`
+### 🔹 Start Volunteer Signup
 
-Body:
+**POST** `/api/auth/user/signup/send-otp`
+
+Send the signup profile fields (`name`, `phone`, `email`, and optional profile fields). The backend emails an OTP and holds the pending profile until verification; it does not create the account at this step.
+
+### 🔹 Verify Signup OTP and Create Account
+
+**POST** `/api/auth/user/signup/verify-otp`
 
 ```
 {
-  "name": "Deepthi",
-  "email": "deepthi@gmail.com",
-  "password": "123456"
+  "email": "volunteer@example.com",
+  "otp": "six-digit-code"
 }
 ```
 
----
+On success, the backend creates the volunteer and returns the normal user JWT/profile. The frontend uses these to log the volunteer in automatically.
 
-### 🔹 Login User
+### 🔹 Start Volunteer Login
 
-**POST** `/api/auth/login`
+**POST** `/api/auth/user/login/send-otp`
 
-Returns JWT token
+Body: `{ "email": "volunteer@example.com" }`.
+
+### 🔹 Verify Login OTP
+
+**POST** `/api/auth/user/login/verify-otp`
+
+Body: `{ "email": "volunteer@example.com", "otp": "six-digit-code" }`.
+
+### 🔹 NGO Authentication
+
+NGO signup and password login are unchanged at `/api/auth/ngo/register` and `/api/auth/ngo/login`.
 
 ---
 

@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Phone, ArrowRight, RefreshCw, Loader2, CheckCircle2 } from "lucide-react";
+import { Mail, ArrowRight, RefreshCw, Loader2 } from "lucide-react";
 import { authService } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-
-const DUMMY_OTP = "123456";
 
 export default function Login() {
   const navigate = useNavigate();
   const { loginUserWithToken } = useAuth();
 
-  const [step, setStep] = useState("phone"); // "phone" | "otp"
-  const [phone, setPhone] = useState("+639171234567");
+  const [step, setStep] = useState("email"); // "email" | "otp"
+  const [email, setEmail] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -19,14 +17,14 @@ export default function Login() {
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
-    if (phone.replace(/\D/g, "").length < 7) {
-      setError("Please enter a valid mobile number.");
+    if (!email.trim()) {
+      setError("Please enter your email address.");
       return;
     }
     setError("");
     setLoading(true);
     try {
-      const res = await authService.sendUserOTP(phone);
+      const res = await authService.sendLoginOtp(email.trim());
       setOtpNotice(res.message || "OTP sent successfully.");
       setStep("otp");
     } catch (err) {
@@ -64,7 +62,7 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const res = await authService.verifyUserOTP({ phone, otp: entered });
+      const res = await authService.verifyLoginOtp({ email: email.trim(), otp: entered });
       const userData = res.user || res.profile || res.data || res;
       if (res.token) {
         loginUserWithToken(res.token, userData);
@@ -80,12 +78,7 @@ export default function Login() {
   };
 
 
-  const fillDemoOtp = () => {
-    setOtp(["1", "2", "3", "4", "5", "6"]);
-  };
-
-  const maskedPhone =
-    phone.length >= 4 ? phone.slice(0, 4) + " **** " + phone.slice(-4) : phone;
+  const maskedEmail = email.replace(/^(.).+(@.+)$/, "$1••••$2");
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6 text-foreground">
@@ -98,32 +91,32 @@ export default function Login() {
             <span className="text-2xl font-bold text-primary">CivicEngage</span>
           </Link>
           <h2 className="text-xl font-bold">
-            {step === "phone" ? "Volunteer Mobile Login" : "Verify Mobile OTP"}
+            {step === "email" ? "Volunteer Email Login" : "Verify Email OTP"}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {step === "phone"
-              ? "Enter your registered mobile number to continue"
-              : `OTP code sent to ${maskedPhone}`}
+            {step === "email"
+              ? "Enter your registered email address to continue"
+              : `OTP code sent to ${maskedEmail}`}
           </p>
         </div>
 
-        {step === "phone" ? (
+        {step === "email" ? (
           <form onSubmit={handleSendOTP} className="space-y-4">
             <div>
-              <label htmlFor="phone" className="mb-2 block text-sm font-medium">
-                Mobile Number
+              <label htmlFor="email" className="mb-2 block text-sm font-medium">
+                Email Address
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <input
-                  id="phone"
-                  type="tel"
-                  value={phone}
+                  id="email"
+                  type="email"
+                  value={email}
                   onChange={(e) => {
-                    setPhone(e.target.value);
+                    setEmail(e.target.value);
                     setError("");
                   }}
-                  placeholder="+63 9XX XXX XXXX"
+                  placeholder="you@example.com"
                   className="w-full rounded-xl border border-border bg-background px-10 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                   required
                 />
@@ -136,7 +129,7 @@ export default function Login() {
               disabled={loading}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-all shadow-md disabled:opacity-60"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Dummy OTP"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Email OTP"}
               <ArrowRight className="h-4 w-4" />
             </button>
           </form>
@@ -162,18 +155,7 @@ export default function Login() {
 
               {error && <p className="text-center text-xs font-semibold text-destructive">{error}</p>}
 
-              <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3 text-center space-y-1">
-                <p className="text-xs text-blue-800">
-                  Demo OTP Code: <span className="font-mono font-bold text-blue-900">123456</span>
-                </p>
-                <button
-                  type="button"
-                  onClick={fillDemoOtp}
-                  className="text-xs text-blue-600 hover:underline font-medium"
-                >
-                  Auto-fill demo OTP (123456)
-                </button>
-              </div>
+              {otpNotice && <p className="text-center text-xs text-muted-foreground">{otpNotice}</p>}
             </div>
 
             <div className="space-y-3">
@@ -188,14 +170,15 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => {
-                  setStep("phone");
+                  setStep("email");
                   setOtp(["", "", "", "", "", ""]);
                   setError("");
+                  setOtpNotice("");
                 }}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-border px-4 py-2.5 text-xs text-muted-foreground hover:bg-muted transition-all"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
-                Change mobile number / Resend OTP
+                Change email / Request another OTP
               </button>
             </div>
           </form>

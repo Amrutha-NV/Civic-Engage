@@ -20,7 +20,7 @@ exports.getUserProfile = async (req, res) => {
 // @route PUT /api/users/profile
 exports.updateUserProfile = async (req, res) => {
   try {
-    const { name, email, skills, interests, availability, location, occupation, avatar } = req.body;
+    const { name, skills, interests, availability, location, occupation, avatar } = req.body;
     const user = await User.findById(req.user._id);
 
     if (!user) {
@@ -28,7 +28,6 @@ exports.updateUserProfile = async (req, res) => {
     }
 
     if (name) user.name = name;
-    if (email) user.email = email;
     if (skills && Array.isArray(skills)) user.skills = skills;
     if (interests && Array.isArray(interests)) user.interests = interests;
     if (availability) user.availability = availability;

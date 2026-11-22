@@ -33,7 +33,7 @@ export default function Signup() {
 
   const [step, setStep] = useState("form"); // "form" | "otp"
   const [formData, setFormData] = useState({
-    phone: "+919876543210",
+    phone: "",
     name: "",
     email: "",
     location: "Bengaluru, Karnataka",
@@ -47,6 +47,7 @@ export default function Signup() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [otpNotice, setOtpNotice] = useState("");
 
   const toggleSkill = (skill) => {
     setFormData((prev) => ({
@@ -68,14 +69,15 @@ export default function Signup() {
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone) {
-      setError("Name and mobile number are required.");
+    if (!formData.name || !formData.phone || !formData.email.trim()) {
+      setError("Name, mobile number, and email address are required.");
       return;
     }
     setError("");
     setLoading(true);
     try {
-      await authService.sendUserOTP(formData.phone);
+      const res = await authService.sendSignupOtp(formData);
+      setOtpNotice(res.message || "Verification code sent to your email.");
       setStep("otp");
     } catch (err) {
       setError(err.message || "Failed to send OTP.");
@@ -110,8 +112,8 @@ export default function Signup() {
     setError("");
     setLoading(true);
     try {
-      const res = await authService.verifyUserOTP({
-        ...formData,
+      const res = await authService.verifySignupOtp({
+        email: formData.email.trim(),
         otp: entered,
       });
       if (res.token && res.user) {
@@ -139,7 +141,7 @@ export default function Signup() {
           <p className="text-sm text-muted-foreground">
             {step === "form"
               ? "Join CivicEngage to discover events & match with NGOs"
-              : `Enter 6-digit OTP sent to ${formData.phone}`}
+              : `Enter the 6-digit OTP sent to ${formData.email}`}
           </p>
         </div>
 
@@ -177,7 +179,7 @@ export default function Signup() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Email Address</label>
+                <label className="mb-1.5 block text-sm font-medium">Email Address *</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <input
@@ -186,6 +188,7 @@ export default function Signup() {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="jane@example.com"
                     className="w-full rounded-xl border border-border bg-background py-2.5 pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    required
                   />
                 </div>
               </div>
@@ -280,7 +283,7 @@ export default function Signup() {
               disabled={loading}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-all shadow-md disabled:opacity-60"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Continue & Verify Mobile OTP"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Continue & Verify Email"}
               <ArrowRight className="h-4 w-4" />
             </button>
           </form>
@@ -305,19 +308,7 @@ export default function Signup() {
               </div>
 
               {error && <p className="text-center text-xs font-semibold text-destructive">{error}</p>}
-
-              <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-3 text-center space-y-1">
-                <p className="text-xs text-blue-800">
-                  Demo OTP Code: <span className="font-mono font-bold text-blue-900">123456</span>
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setOtp(["1", "2", "3", "4", "5", "6"])}
-                  className="text-xs text-blue-600 hover:underline font-medium"
-                >
-                  Auto-fill demo OTP (123456)
-                </button>
-              </div>
+              {otpNotice && <p className="text-center text-xs text-muted-foreground">{otpNotice}</p>}
             </div>
 
             <div className="space-y-3">
@@ -331,7 +322,12 @@ export default function Signup() {
               </button>
               <button
                 type="button"
-                onClick={() => setStep("form")}
+                onClick={() => {
+                  setStep("form");
+                  setOtp(["", "", "", "", "", ""]);
+                  setError("");
+                  setOtpNotice("");
+                }}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-border px-4 py-2.5 text-xs text-muted-foreground hover:bg-muted transition-all"
               >
                 <RefreshCw className="h-3.5 w-3.5" />

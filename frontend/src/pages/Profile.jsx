@@ -168,9 +168,10 @@ export default function Profile() {
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-background py-2 px-3 text-sm outline-none focus:border-primary"
+                  readOnly
+                  className="w-full rounded-xl border border-border bg-muted py-2 px-3 text-sm outline-none"
                 />
+                <p className="mt-1 text-xs text-muted-foreground">Email is used for login. Changing it requires verification.</p>
               </div>
 
               <div>
