@@ -334,7 +334,7 @@ exports.getEventRecommendations = async (req, res) => {
 
         {
           // Transformer model + Groq can take a little time
-          timeout: 15000,
+          timeout: 60000,
         },
       );
 
