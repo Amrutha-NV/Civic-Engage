@@ -1,0 +1,12 @@
+@'
+.venv
+venv
+__pycache__
+**/__pycache__
+*.pyc
+.git
+.pytest_cache
+.mypy_cache
+.ipynb_checkpoints
+.DS_Store
+'@ | Set-Content -Encoding ascii .dockerignore
