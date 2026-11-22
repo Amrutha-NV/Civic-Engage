@@ -1,0 +1,155 @@
+﻿import re
+from pathlib import Path
+
+import pandas as pd
+
+BASE = Path(__file__).resolve().parents[1]
+INPUT = BASE / "market_evidence.csv"
+
+COLUMNS = [
+    "item_name", "specification", "unit", "observed_price",
+    "currency", "source_name", "source_url", "date_collected",
+    "location", "notes",
+]
+
+STOPWORDS = {
+    "the", "and", "for", "with", "from", "new", "item",
+    "product", "procurement", "model", "brand", "of", "a",
+    "an", "to", "in", "each",
+}
+
+
+def _normalize(value):
+    return re.sub(r"[^a-z0-9]+", " ", str(value).lower()).strip()
+
+
+def _tokens(value):
+    return {
+        token for token in _normalize(value).split()
+        if len(token) > 1 and token not in STOPWORDS
+    }
+
+
+def _identifiers(value):
+    # Preserve model identifiers such as P2425H and C8200-1N-4T.
+    found = re.findall(
+        r"(?<![A-Za-z0-9])[A-Za-z]{1,6}[- ]?\d[A-Za-z0-9-]*(?![A-Za-z0-9])",
+        str(value),
+    )
+    return {
+        re.sub(r"[^a-z0-9]", "", item.lower())
+        for item in found
+    }
+
+
+def _compatible_unit(value):
+    unit = _normalize(value)
+    aliases = {
+        "each": "each",
+        "ea": "each",
+        "unit": "each",
+        "units": "each",
+        "piece": "each",
+        "pieces": "each",
+        "set": "set",
+        "pair": "pair",
+        "hour": "hour",
+        "hours": "hour",
+        "kg": "kg",
+        "kilogram": "kg",
+        "kilograms": "kg",
+    }
+    return aliases.get(unit, unit)
+
+
+def search_market(
+    item_name,
+    max_results=10,
+    currency=None,
+    unit=None,
+    min_score=0.35,
+):
+    """Find plausible product matches; this is not price approval."""
+    if not INPUT.exists():
+        raise FileNotFoundError(f"Market evidence file not found: {INPUT}")
+    if max_results < 1:
+        raise ValueError("max_results must be at least 1")
+    if not 0 <= min_score <= 1:
+        raise ValueError("min_score must be between 0 and 1")
+
+    df = pd.read_csv(INPUT)
+    missing = [column for column in COLUMNS if column not in df.columns]
+    if missing:
+        raise ValueError(f"Market evidence is missing columns: {missing}")
+
+    query = str(item_name).strip()
+    if not query:
+        return pd.DataFrame(columns=COLUMNS + ["match_score", "match_reason"])
+
+    query_tokens = _tokens(query)
+    query_ids = _identifiers(query)
+    query_currency = str(currency).strip().upper() if currency else None
+    query_unit = _compatible_unit(unit) if unit else None
+
+    matches = []
+    for _, row in df.iterrows():
+        evidence_text = " ".join(
+            str(row.get(col, "") or "")
+            for col in ("item_name", "specification")
+        )
+        evidence_tokens = _tokens(evidence_text)
+        evidence_ids = _identifiers(evidence_text)
+
+        # If the query specifies a model identifier, require an exact ID match.
+        if query_ids and not query_ids.issubset(evidence_ids):
+            continue
+
+        overlap = len(query_tokens & evidence_tokens)
+        score = overlap / len(query_tokens) if query_tokens else 0.0
+
+        # Avoid broad brand-only matches for multi-term product queries.
+        if len(query_tokens) > 1 and overlap < 2 and not query_ids:
+            continue
+        if score < min_score:
+            continue
+
+        row_currency = str(row.get("currency", "")).strip().upper()
+        if query_currency and row_currency != query_currency:
+            continue
+
+        row_unit = _compatible_unit(row.get("unit", ""))
+        if query_unit and row_unit != query_unit:
+            continue
+
+        # Never use invalid or non-positive prices as benchmark evidence.
+        price = pd.to_numeric(row.get("observed_price"), errors="coerce")
+        if pd.isna(price) or price <= 0 or not row_currency or not row_unit:
+            continue
+
+        result = row[COLUMNS].to_dict()
+        result["observed_price"] = float(price)
+        result["match_score"] = round(score, 4)
+        result["match_reason"] = (
+            "exact_model_identifier" if query_ids else "token_overlap"
+        )
+        matches.append(result)
+
+    if not matches:
+        return pd.DataFrame(columns=COLUMNS + ["match_score", "match_reason"])
+
+    return (
+        pd.DataFrame(matches)
+        .sort_values(["match_score", "item_name"], ascending=[False, True])
+        .head(max_results)
+        .reset_index(drop=True)
+    )
+
+
+if __name__ == "__main__":
+    results = search_market("Dell Pro 24 Plus Monitor P2425H")
+    print(f"[OK] Matching evidence records: {len(results)}")
+    if not results.empty:
+        print(results[
+            ["item_name", "observed_price", "currency", "unit",
+             "match_score", "match_reason"]
+        ].to_string(index=False))

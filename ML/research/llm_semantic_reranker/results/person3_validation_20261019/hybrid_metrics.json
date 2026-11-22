@@ -1,0 +1,88 @@
+{
+  "experiment": "semantic_structured_market_hybrid_reranker",
+  "dataset_path": "C:\\Users\\Hp\\OneDrive\\Desktop\\Civic-Engage\\ML\\research\\procurement_benchmark_topk\\frozen_evaluation_dataset.parquet",
+  "query_count": 10560,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "device": "cpu",
+  "unique_descriptions_encoded": 19551,
+  "semantic_weight": 0.5,
+  "attribute_weight": 0.5,
+  "market_weight_when_valid_evidence": 0.1,
+  "market_evidence_coverage": {
+    "total_queries": 10560,
+    "queries_with_market_evidence": 0,
+    "queries_without_market_evidence": 10560
+  },
+  "queries_with_market_score_on_selected_candidate": 0,
+  "market_evidence_integration": "Exact-text evidence filter; market influence disabled when usable evidence is unavailable",
+  "selection_inputs": [
+    "target_description",
+    "candidate_description",
+    "target_brand",
+    "target_model",
+    "target_commodity_code",
+    "candidate_unit_price",
+    "market_evidence.csv"
+  ],
+  "excluded_from_selection": [
+    "actual_unit_price",
+    "absolute_percentage_error",
+    "is_within_10pct"
+  ],
+  "normalisation": "Cosine score min-max normalised within each query's Top-10",
+  "tie_break_rule": "Lowest candidate_rank after equal hybrid score",
+  "baseline": {
+    "accuracy_at_5pct": {
+      "hits": 3330,
+      "total": 10560,
+      "percentage": 31.534091
+    },
+    "accuracy_at_10pct": {
+      "hits": 3967,
+      "total": 10560,
+      "percentage": 37.566288
+    },
+    "accuracy_at_20pct": {
+      "hits": 4823,
+      "total": 10560,
+      "percentage": 45.672348
+    },
+    "mae": 6729.162123,
+    "mdape": 26.948608,
+    "mean_ape": 1206.514905
+  },
+  "hybrid_reranker": {
+    "accuracy_at_5pct": {
+      "hits": 3444,
+      "total": 10560,
+      "percentage": 32.613636
+    },
+    "accuracy_at_10pct": {
+      "hits": 4097,
+      "total": 10560,
+      "percentage": 38.797348
+    },
+    "accuracy_at_20pct": {
+      "hits": 5003,
+      "total": 10560,
+      "percentage": 47.376894
+    },
+    "mae": 6271.094669,
+    "mdape": 23.378451,
+    "mean_ape": 1047.591206
+  },
+  "selected_rank_distribution": {
+    "1": 5315,
+    "2": 1227,
+    "3": 753,
+    "4": 662,
+    "5": 530,
+    "6": 453,
+    "7": 447,
+    "8": 380,
+    "9": 392,
+    "10": 401
+  },
+  "execution_utc": "2026-10-19T16:24:05.469208+00:00",
+  "runtime_seconds": 1766.785
+}

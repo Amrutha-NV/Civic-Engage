@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const dotenv = require("dotenv");
+const dns = require("dns");
+
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
 // 1. Load environment variables from root directory (.env), with fallback to local .env
 const rootEnv = path.resolve(__dirname, "..", ".env");
